@@ -41,6 +41,66 @@
 ### 💾 データ永続化
 LocalStorageを使用してデータを自動保存。ブラウザを閉じても記録が保持されます。
 
+## デモ・公開方法
+
+### GitHub Pagesで公開（推奨）
+
+#### 方法1: ブランチから直接公開（最も簡単）
+
+1. このブランチをmainブランチにマージ
+2. GitHubのリポジトリページで **Settings** → **Pages** を開く
+3. **Source** で「**Deploy from a branch**」を選択
+4. **Branch** で「**main**」/「**/ (root)**」を選択して **Save**
+5. 数分後、`https://<ユーザー名>.github.io/<リポジトリ名>/` でアクセス可能に！
+
+例: `https://shoooya.github.io/no-smoking/`
+
+#### 方法2: GitHub Actionsで自動デプロイ（オプション）
+
+より高度な設定が必要な場合は、`.github/workflows/deploy.yml` を作成：
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+その後、**Settings** → **Pages** → **Source** で「**GitHub Actions**」を選択
+
 ## 使い方
 
 1. `index.html` をWebブラウザで開きます
