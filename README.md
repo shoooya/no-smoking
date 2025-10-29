@@ -43,9 +43,11 @@ LocalStorageを使用してデータを自動保存。ブラウザを閉じて�
 
 ## デモ・公開方法
 
-### GitHub Pagesで公開（推奨）
+### 🚀 GitHub Pagesで公開
 
-#### 方法1: ブランチから直接公開（最も簡単）
+**📖 詳細なセットアップガイド: [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)**
+
+#### 方法1: ブランチから直接公開（最も簡単）⚡
 
 1. このブランチをmainブランチにマージ
 2. GitHubのリポジトリページで **Settings** → **Pages** を開く
@@ -55,9 +57,24 @@ LocalStorageを使用してデータを自動保存。ブラウザを閉じて�
 
 例: `https://shoooya.github.io/no-smoking/`
 
-#### 方法2: GitHub Actionsで自動デプロイ（オプション）
+#### 方法2: GitHub Actionsで自動デプロイ（推奨）🤖
 
-より高度な設定が必要な場合は、`.github/workflows/deploy.yml` を作成：
+**注意**: Claude Codeの制限により、ワークフローファイルを直接プッシュできません。
+以下のいずれかの方法で設定してください：
+
+**A. GitHub UIから作成（最も簡単）**
+1. GitHubの **Actions** タブ → **New workflow**
+2. ワークフローファイルの内容を貼り付け（詳細は[GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)参照）
+3. **Settings** → **Pages** → **Source** で「**GitHub Actions**」を選択
+
+**B. ローカルでプッシュ**
+`.github/workflows/deploy.yml` を作成してあなた自身のGit認証でプッシュ
+
+詳細な手順とトラブルシューティングは **[GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)** をご覧ください。
+
+#### ワークフローファイルのテンプレート
+
+`.github/workflows/deploy.yml` に以下を配置：
 
 ```yaml
 name: Deploy to GitHub Pages

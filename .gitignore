@@ -1,0 +1,3 @@
+# GitHub Workflows (add manually via GitHub UI or local Git)
+# Claude Code cannot push workflow files due to permission restrictions
+.github/workflows/
