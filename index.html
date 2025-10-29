@@ -1062,7 +1062,136 @@
             padding: 18px 40px;
         }
 
+        /* 吸っちゃった記録ボタン */
+        .slip-button {
+            position: fixed;
+            bottom: 180px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(255, 107, 107, 0.5);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slip-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.7);
+        }
+
+        .slip-button:active {
+            transform: scale(0.95);
+        }
+
+        /* 吸っちゃった記録カード */
+        .slips-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .slips-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .slip-item {
+            background: #fff5f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .slip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .slip-time {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .slip-count {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .slip-details {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .slip-details strong {
+            color: #333;
+        }
+
+        .slip-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .slip-stat-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #ffcccc;
+        }
+
+        .slip-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .slip-stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .encouragement-message {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
+            .slip-button {
+                bottom: 150px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 1.8em;
+            }
+
             .sos-button {
                 bottom: 80px;
                 right: 20px;
@@ -1427,6 +1556,26 @@
                 <div id="cravingsList"></div>
             </div>
 
+            <!-- 吸っちゃった記録一覧 -->
+            <div class="slips-card">
+                <h2>吸っちゃった記録</h2>
+                <div class="slip-stats" id="slipStats">
+                    <div class="slip-stat-box">
+                        <div class="slip-stat-value" id="totalSlips">0</div>
+                        <div class="slip-stat-label">総記録回数</div>
+                    </div>
+                    <div class="slip-stat-box">
+                        <div class="slip-stat-value" id="totalSlipCigarettes">0</div>
+                        <div class="slip-stat-label">総本数</div>
+                    </div>
+                    <div class="slip-stat-box">
+                        <div class="slip-stat-value" id="daysSinceLastSlip">-</div>
+                        <div class="slip-stat-label">最後から経過日数</div>
+                    </div>
+                </div>
+                <div id="slipsList"></div>
+            </div>
+
             <button class="btn" id="shareBtn">🔗 進捗を共有するURLをコピー</button>
             <button class="btn btn-secondary" id="resetBtn">データをリセット</button>
         </div>
@@ -1434,6 +1583,9 @@
 
     <!-- 渇望記録FABボタン -->
     <button class="fab-button hidden" id="cravingFab" title="吸いたくなった">🚬</button>
+
+    <!-- 吸っちゃった記録ボタン -->
+    <button class="slip-button hidden" id="slipButton" title="吸っちゃった">💔</button>
 
     <!-- 緊急SOSボタン -->
     <button class="sos-button hidden" id="sosButton" title="緊急SOS">🆘</button>
@@ -1511,12 +1663,70 @@
         </div>
     </div>
 
+    <!-- 吸っちゃった記録モーダル -->
+    <div class="modal-overlay" id="slipModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>吸っちゃった記録</h2>
+                <button class="modal-close" id="closeSlipModal">×</button>
+            </div>
+            <form id="slipForm">
+                <div class="form-group">
+                    <label>本数</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" class="intensity-slider" id="slipCountSlider" min="1" max="20" value="1">
+                        <div class="intensity-value" id="slipCountValue">1</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>状況</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="slipSit1" name="slipSituation" value="仕事中" checked>
+                            <label for="slipSit1">仕事中</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="slipSit2" name="slipSituation" value="食後">
+                            <label for="slipSit2">食後</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="slipSit3" name="slipSituation" value="飲酒時">
+                            <label for="slipSit3">飲酒時</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="slipSit4" name="slipSituation" value="ストレス">
+                            <label for="slipSit4">ストレス</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="slipSit5" name="slipSituation" value="その他">
+                            <label for="slipSit5">その他</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="slipTrigger">何がきっかけでしたか？</label>
+                    <input type="text" id="slipTrigger" placeholder="例：飲み会で周りの人が吸っていた">
+                </div>
+
+                <div class="form-group">
+                    <label for="slipFeelings">気持ち（任意）</label>
+                    <input type="text" id="slipFeelings" placeholder="今の気持ちを記録...">
+                </div>
+
+                <button type="submit" class="btn">記録する</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // グローバル変数
         let quitData = null;
         let updateInterval = null;
         let calendarData = {};
         let cravings = [];
+        let slips = [];
         let copingStrategies = [];
         let currentStrategyFilter = 'all';
         let sosHistory = [];
@@ -1791,6 +2001,19 @@
                 document.getElementById('intensityValue').textContent = e.target.value;
             });
 
+            // 吸っちゃった記録関連
+            document.getElementById('slipButton').addEventListener('click', openSlipModal);
+            document.getElementById('closeSlipModal').addEventListener('click', closeSlipModal);
+            document.getElementById('slipModal').addEventListener('click', function(e) {
+                if (e.target.id === 'slipModal') {
+                    closeSlipModal();
+                }
+            });
+            document.getElementById('slipForm').addEventListener('submit', handleSlipSubmit);
+            document.getElementById('slipCountSlider').addEventListener('input', function(e) {
+                document.getElementById('slipCountValue').textContent = e.target.value;
+            });
+
             // 対処法のカテゴリーフィルター
             document.querySelectorAll('.category-filter').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1835,7 +2058,17 @@
         function handleReset() {
             if (confirm('本当にデータをリセットしますか？これまでの記録は全て削除されます。')) {
                 localStorage.removeItem('quitData');
+                localStorage.removeItem('calendarData');
+                localStorage.removeItem('cravings');
+                localStorage.removeItem('slips');
+                localStorage.removeItem('copingStrategies');
+                localStorage.removeItem('sosHistory');
+                localStorage.removeItem('reasons');
                 quitData = null;
+                calendarData = {};
+                cravings = [];
+                slips = [];
+                sosHistory = [];
                 if (updateInterval) {
                     clearInterval(updateInterval);
                 }
@@ -1848,6 +2081,7 @@
             localStorage.setItem('quitData', JSON.stringify(quitData));
             localStorage.setItem('calendarData', JSON.stringify(calendarData));
             localStorage.setItem('cravings', JSON.stringify(cravings));
+            localStorage.setItem('slips', JSON.stringify(slips));
             localStorage.setItem('copingStrategies', JSON.stringify(copingStrategies));
             localStorage.setItem('sosHistory', JSON.stringify(sosHistory));
             localStorage.setItem('reasons', JSON.stringify(reasons));
@@ -1865,6 +2099,12 @@
             const savedCravings = localStorage.getItem('cravings');
             if (savedCravings) {
                 cravings = JSON.parse(savedCravings);
+            }
+
+            // 吸っちゃった記録の読み込み
+            const savedSlips = localStorage.getItem('slips');
+            if (savedSlips) {
+                slips = JSON.parse(savedSlips);
             }
 
             // 対処法の読み込み（初回はデフォルトデータを使用）
@@ -1927,6 +2167,7 @@
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('dashboard').style.display = 'block';
             document.getElementById('cravingFab').classList.remove('hidden');
+            document.getElementById('slipButton').classList.remove('hidden');
             document.getElementById('sosButton').classList.remove('hidden');
         }
 
@@ -1996,6 +2237,9 @@
 
             // 渇望記録の更新
             updateCravingsDisplay();
+
+            // 吸っちゃった記録の更新
+            updateSlipsDisplay();
 
             // 購入シミュレーターの更新
             updatePurchaseSimulator(moneySaved);
@@ -2241,6 +2485,120 @@
 
                 listContainer.appendChild(div);
             });
+        }
+
+        // 吸っちゃった記録モーダルを開く
+        function openSlipModal() {
+            document.getElementById('slipModal').classList.add('active');
+            document.getElementById('slipCountSlider').value = 1;
+            document.getElementById('slipCountValue').textContent = 1;
+        }
+
+        // 吸っちゃった記録モーダルを閉じる
+        function closeSlipModal() {
+            document.getElementById('slipModal').classList.remove('active');
+            document.getElementById('slipForm').reset();
+        }
+
+        // 吸っちゃった記録フォームの送信処理
+        function handleSlipSubmit(e) {
+            e.preventDefault();
+
+            const count = parseInt(document.getElementById('slipCountSlider').value);
+            const situation = document.querySelector('input[name="slipSituation"]:checked').value;
+            const trigger = document.getElementById('slipTrigger').value;
+            const feelings = document.getElementById('slipFeelings').value;
+
+            const slip = {
+                id: new Date().getTime().toString(),
+                timestamp: new Date().toISOString(),
+                count: count,
+                situation: situation,
+                trigger: trigger,
+                feelings: feelings
+            };
+
+            slips.unshift(slip);
+
+            // 今日のカレンダーデータを更新（slipステータスに）
+            const today = formatDateStr(new Date());
+            if (calendarData[today]) {
+                calendarData[today].status = 'slip';
+            }
+
+            saveData();
+            closeSlipModal();
+            updateSlipsDisplay();
+            updateCalendarHeatmap();
+
+            // 励ましのメッセージ
+            alert('記録しました。大丈夫、これは失敗ではなく学びです。また今から始めましょう！');
+        }
+
+        // 吸っちゃった記録の表示更新
+        function updateSlipsDisplay() {
+            // 統計情報の更新
+            const totalSlips = slips.length;
+            const totalCigarettes = slips.reduce((sum, s) => sum + s.count, 0);
+
+            let daysSinceLastSlip = '-';
+            if (slips.length > 0) {
+                const lastSlipDate = new Date(slips[0].timestamp);
+                const now = new Date();
+                const diffTime = now - lastSlipDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                daysSinceLastSlip = diffDays + '日';
+            }
+
+            document.getElementById('totalSlips').textContent = totalSlips;
+            document.getElementById('totalSlipCigarettes').textContent = totalCigarettes;
+            document.getElementById('daysSinceLastSlip').textContent = daysSinceLastSlip;
+
+            // 吸っちゃった記録一覧の更新
+            const listContainer = document.getElementById('slipsList');
+            listContainer.innerHTML = '';
+
+            if (slips.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">記録がありません。素晴らしい！</p>';
+                return;
+            }
+
+            // 最新10件を表示
+            const recentSlips = slips.slice(0, 10);
+            recentSlips.forEach(slip => {
+                const div = document.createElement('div');
+                div.className = 'slip-item';
+
+                const date = new Date(slip.timestamp);
+                const timeStr = date.toLocaleString('ja-JP', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                div.innerHTML = `
+                    <div class="slip-header">
+                        <div class="slip-time">${timeStr}</div>
+                        <div class="slip-count">${slip.count}本</div>
+                    </div>
+                    <div class="slip-details">
+                        <strong>状況:</strong> ${slip.situation}<br>
+                        ${slip.trigger ? `<strong>きっかけ:</strong> ${slip.trigger}<br>` : ''}
+                        ${slip.feelings ? `<strong>気持ち:</strong> ${slip.feelings}` : ''}
+                    </div>
+                `;
+
+                listContainer.appendChild(div);
+            });
+
+            // 励ましメッセージを追加
+            if (slips.length > 0) {
+                const encouragement = document.createElement('div');
+                encouragement.className = 'encouragement-message';
+                encouragement.textContent = '過去は変えられませんが、未来は変えられます。一度の失敗で全てが無駄になるわけではありません。今この瞬間から、また禁煙を続けましょう！';
+                listContainer.appendChild(encouragement);
+            }
         }
 
         // 対処法の表示
