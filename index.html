@@ -1083,6 +1083,75 @@
                 font-size: 1.1em;
             }
         }
+
+        /* なぜ禁煙？リマインダー */
+        .why-quit-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .why-quit-card h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .reason-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .reason-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .reason-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .reason-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reason-emoji {
+            font-size: 2em;
+        }
+
+        .reason-text {
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .add-reason-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .add-reason-btn:hover {
+            background: white;
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -1192,6 +1261,13 @@
                     <div class="stat-value" id="healthScore">0%</div>
                     <div class="stat-label">健康回復度</div>
                 </div>
+            </div>
+
+            <!-- なぜ禁煙？リマインダー -->
+            <div class="why-quit-card">
+                <h2>💪 なぜ禁煙？</h2>
+                <div class="reason-list" id="reasonList"></div>
+                <button class="add-reason-btn" id="addReasonBtn">+ 理由を追加</button>
             </div>
 
             <!-- モチベーションメッセージ -->
@@ -1371,6 +1447,7 @@
         let currentStrategyFilter = 'all';
         let sosHistory = [];
         let sosCountdownInterval = null;
+        let reasons = [];
 
         // 健康マイルストーン（医学的根拠に基づく）
         const healthMilestones = [
@@ -1516,6 +1593,13 @@
             }
         ];
 
+        // デフォルトの禁煙理由
+        const defaultReasons = [
+            { id: 'health', emoji: '❤️', text: '健康のために', category: '健康' },
+            { id: 'money', emoji: '💰', text: 'お金を節約したい', category: 'お金' },
+            { id: 'family', emoji: '👨‍👩‍👧‍👦', text: '家族のために', category: '家族' }
+        ];
+
         // モチベーションメッセージ
         const motivationMessages = [
             '素晴らしい！あなたは健康への第一歩を踏み出しました。',
@@ -1631,6 +1715,9 @@
             // SOS関連
             document.getElementById('sosButton').addEventListener('click', openSOS);
             document.getElementById('sosOvercomeBtn').addEventListener('click', closeSOS);
+
+            // 禁煙理由
+            document.getElementById('addReasonBtn').addEventListener('click', addReason);
         }
 
         // セットアップフォームの処理
@@ -1674,6 +1761,7 @@
             localStorage.setItem('cravings', JSON.stringify(cravings));
             localStorage.setItem('copingStrategies', JSON.stringify(copingStrategies));
             localStorage.setItem('sosHistory', JSON.stringify(sosHistory));
+            localStorage.setItem('reasons', JSON.stringify(reasons));
         }
 
         // データの読み込み
@@ -1703,6 +1791,15 @@
             const savedSosHistory = localStorage.getItem('sosHistory');
             if (savedSosHistory) {
                 sosHistory = JSON.parse(savedSosHistory);
+            }
+
+            // 禁煙理由の読み込み（初回はデフォルトデータを使用）
+            const savedReasons = localStorage.getItem('reasons');
+            if (savedReasons) {
+                reasons = JSON.parse(savedReasons);
+            } else {
+                reasons = [...defaultReasons];
+                saveData();
             }
 
             // まずURLクエリパラメータをチェック
@@ -1748,6 +1845,7 @@
         function startUpdating() {
             initTodayCalendarData();
             displayCopingStrategies();
+            displayReasons();
             updateDashboard();
             updateInterval = setInterval(updateDashboard, 1000);
         }
@@ -2197,6 +2295,50 @@
             document.getElementById('sosOverlay').classList.remove('active');
 
             alert('素晴らしい！あなたは渇望を乗り越えました！この勝利を誇りに思ってください！');
+        }
+
+        // 禁煙理由の表示
+        function displayReasons() {
+            const container = document.getElementById('reasonList');
+            container.innerHTML = '';
+
+            if (reasons.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.8;">まだ理由が登録されていません</p>';
+                return;
+            }
+
+            reasons.forEach(reason => {
+                const div = document.createElement('div');
+                div.className = 'reason-item';
+
+                div.innerHTML = `
+                    <div class="reason-header">
+                        <span class="reason-emoji">${reason.emoji}</span>
+                    </div>
+                    <div class="reason-text">${reason.text}</div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        // 禁煙理由を追加
+        function addReason() {
+            const text = prompt('禁煙する理由を入力してください:');
+            if (!text) return;
+
+            const emojis = ['❤️', '💰', '👨‍👩‍👧‍👦', '✨', '🕊️', '💪', '🌟', '🎯'];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+            reasons.push({
+                id: new Date().getTime().toString(),
+                emoji: emoji,
+                text: text,
+                category: 'カスタム'
+            });
+
+            saveData();
+            displayReasons();
         }
 
         // マイルストーンの更新
