@@ -799,6 +799,144 @@
                 min-width: 80px;
             }
         }
+
+        /* 対処法データベース */
+        .coping-strategies-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .coping-strategies-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .strategy-categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-filter {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .category-filter.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .category-filter:hover {
+            border-color: #667eea;
+        }
+
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .strategy-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .strategy-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .strategy-emoji {
+            font-size: 2em;
+        }
+
+        .strategy-favorite {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .strategy-favorite:hover {
+            transform: scale(1.2);
+        }
+
+        .strategy-favorite.active {
+            color: #ffc107;
+        }
+
+        .strategy-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .strategy-duration {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .strategy-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .strategy-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .strategy-use-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .strategy-use-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -960,6 +1098,19 @@
                 <div class="badges-grid" id="badges"></div>
             </div>
 
+            <!-- 対処法データベース -->
+            <div class="coping-strategies-card">
+                <h2>対処法データベース</h2>
+                <div class="strategy-categories">
+                    <button class="category-filter active" data-category="all">すべて</button>
+                    <button class="category-filter" data-category="即効性">即効性（1-5分）</button>
+                    <button class="category-filter" data-category="中期対策">中期対策（10-30分）</button>
+                    <button class="category-filter" data-category="長期戦略">長期戦略</button>
+                    <button class="category-filter" data-category="favorite">お気に入り</button>
+                </div>
+                <div class="strategy-grid" id="strategyGrid"></div>
+            </div>
+
             <!-- 渇望記録一覧 -->
             <div class="cravings-card">
                 <h2>渇望記録</h2>
@@ -1051,6 +1202,8 @@
         let updateInterval = null;
         let calendarData = {};
         let cravings = [];
+        let copingStrategies = [];
+        let currentStrategyFilter = 'all';
 
         // 健康マイルストーン（医学的根拠に基づく）
         const healthMilestones = [
@@ -1080,6 +1233,120 @@
             { id: 'money-saver', condition: 'money', threshold: 10000, name: '節約1万円', icon: '💰' },
             { id: 'big-saver', condition: 'money', threshold: 50000, name: '節約5万円', icon: '💵' },
             { id: 'mega-saver', condition: 'money', threshold: 100000, name: '節約10万円', icon: '💴' }
+        ];
+
+        // 対処法の初期データ
+        const defaultCopingStrategies = [
+            {
+                id: "deep-breathing",
+                name: "深呼吸エクササイズ",
+                category: "即効性",
+                duration: "2-3分",
+                emoji: "🫁",
+                description: "4秒吸って、7秒止めて、8秒吐く。これを3-5回繰り返します。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "water-drink",
+                name: "水を飲む",
+                category: "即効性",
+                duration: "1分",
+                emoji: "💧",
+                description: "コップ1杯の水をゆっくり飲みます。口の中をリフレッシュ。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "hand-massage",
+                name: "手のマッサージ",
+                category: "即効性",
+                duration: "2-3分",
+                emoji: "🤲",
+                description: "手のツボを押したり、指を揉んだりします。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "walk",
+                name: "短い散歩",
+                category: "中期対策",
+                duration: "10-15分",
+                emoji: "🚶",
+                description: "外の空気を吸いながら歩きます。環境を変えることが効果的。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "call-friend",
+                name: "友人に電話",
+                category: "中期対策",
+                duration: "5-10分",
+                emoji: "📞",
+                description: "サポートしてくれる人と話します。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "snack",
+                name: "健康的なスナック",
+                category: "即効性",
+                duration: "3-5分",
+                emoji: "🥕",
+                description: "ニンジンスティック、ガム、ナッツなどを食べます。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "exercise",
+                name: "軽い運動",
+                category: "中期対策",
+                duration: "15-30分",
+                emoji: "🏃",
+                description: "ジョギング、ストレッチ、ヨガなど体を動かします。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "hobby",
+                name: "趣味に没頭",
+                category: "長期戦略",
+                duration: "30分以上",
+                emoji: "🎨",
+                description: "読書、音楽、ゲーム、クラフトなど好きなことをします。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "meditation",
+                name: "瞑想・マインドフルネス",
+                category: "中期対策",
+                duration: "10-20分",
+                emoji: "🧘",
+                description: "静かに座って、呼吸に意識を向けます。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "support-group",
+                name: "サポートグループ参加",
+                category: "長期戦略",
+                duration: "継続的",
+                emoji: "👥",
+                description: "禁煙仲間とのコミュニティに参加します。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            }
         ];
 
         // モチベーションメッセージ
@@ -1183,6 +1450,16 @@
             document.getElementById('intensitySlider').addEventListener('input', function(e) {
                 document.getElementById('intensityValue').textContent = e.target.value;
             });
+
+            // 対処法のカテゴリーフィルター
+            document.querySelectorAll('.category-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.category-filter').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentStrategyFilter = this.dataset.category;
+                    displayCopingStrategies();
+                });
+            });
         }
 
         // セットアップフォームの処理
@@ -1224,6 +1501,7 @@
             localStorage.setItem('quitData', JSON.stringify(quitData));
             localStorage.setItem('calendarData', JSON.stringify(calendarData));
             localStorage.setItem('cravings', JSON.stringify(cravings));
+            localStorage.setItem('copingStrategies', JSON.stringify(copingStrategies));
         }
 
         // データの読み込み
@@ -1238,6 +1516,15 @@
             const savedCravings = localStorage.getItem('cravings');
             if (savedCravings) {
                 cravings = JSON.parse(savedCravings);
+            }
+
+            // 対処法の読み込み（初回はデフォルトデータを使用）
+            const savedStrategies = localStorage.getItem('copingStrategies');
+            if (savedStrategies) {
+                copingStrategies = JSON.parse(savedStrategies);
+            } else {
+                copingStrategies = [...defaultCopingStrategies];
+                saveData();
             }
 
             // まずURLクエリパラメータをチェック
@@ -1281,6 +1568,7 @@
         // 定期更新の開始
         function startUpdating() {
             initTodayCalendarData();
+            displayCopingStrategies();
             updateDashboard();
             updateInterval = setInterval(updateDashboard, 1000);
         }
@@ -1584,6 +1872,82 @@
 
                 listContainer.appendChild(div);
             });
+        }
+
+        // 対処法の表示
+        function displayCopingStrategies() {
+            const container = document.getElementById('strategyGrid');
+            container.innerHTML = '';
+
+            let filteredStrategies = copingStrategies;
+
+            if (currentStrategyFilter === 'favorite') {
+                filteredStrategies = copingStrategies.filter(s => s.favorite);
+            } else if (currentStrategyFilter !== 'all') {
+                filteredStrategies = copingStrategies.filter(s => s.category === currentStrategyFilter);
+            }
+
+            if (filteredStrategies.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1/-1;">該当する対処法がありません</p>';
+                return;
+            }
+
+            filteredStrategies.forEach(strategy => {
+                const div = document.createElement('div');
+                div.className = 'strategy-item';
+
+                const favoriteClass = strategy.favorite ? 'active' : '';
+
+                div.innerHTML = `
+                    <div class="strategy-header">
+                        <div class="strategy-emoji">${strategy.emoji}</div>
+                        <button class="strategy-favorite ${favoriteClass}" data-id="${strategy.id}">⭐</button>
+                    </div>
+                    <div class="strategy-name">${strategy.name}</div>
+                    <div class="strategy-duration">⏱️ ${strategy.duration}</div>
+                    <div class="strategy-description">${strategy.description}</div>
+                    <div class="strategy-stats">
+                        <span>使用回数: ${strategy.timesUsed}</span>
+                    </div>
+                    <button class="strategy-use-btn" data-id="${strategy.id}">この対処法を試す</button>
+                `;
+
+                container.appendChild(div);
+            });
+
+            // イベントリスナーの追加
+            container.querySelectorAll('.strategy-favorite').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toggleStrategyFavorite(this.dataset.id);
+                });
+            });
+
+            container.querySelectorAll('.strategy-use-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    useStrategy(this.dataset.id);
+                });
+            });
+        }
+
+        // 対処法のお気に入りトグル
+        function toggleStrategyFavorite(id) {
+            const strategy = copingStrategies.find(s => s.id === id);
+            if (strategy) {
+                strategy.favorite = !strategy.favorite;
+                saveData();
+                displayCopingStrategies();
+            }
+        }
+
+        // 対処法を使用
+        function useStrategy(id) {
+            const strategy = copingStrategies.find(s => s.id === id);
+            if (strategy) {
+                strategy.timesUsed++;
+                saveData();
+                displayCopingStrategies();
+                alert(`「${strategy.name}」を実行します。${strategy.duration}かかります。\n\n${strategy.description}`);
+            }
         }
 
         // マイルストーンの更新
