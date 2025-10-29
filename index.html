@@ -424,6 +424,119 @@
             opacity: 0.8;
             margin-top: 5px;
         }
+
+        /* 禁煙継続カレンダー（GitHub風ヒートマップ） */
+        .calendar-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .calendar-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .calendar-heatmap {
+            display: flex;
+            gap: 3px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .calendar-week {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .calendar-day {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            background: #ebedf0;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .calendar-day.future {
+            background: #f8f9fa;
+            border: 1px dashed #e0e0e0;
+        }
+
+        .calendar-day.success-light {
+            background: #84fab0;
+        }
+
+        .calendar-day.success-perfect {
+            background: #28a745;
+        }
+
+        .calendar-day.has-craving {
+            background: #ffc107;
+        }
+
+        .calendar-day.slip {
+            background: #dc3545;
+        }
+
+        .calendar-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .calendar-legend {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .calendar-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .calendar-legend-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-day {
+                width: 12px;
+                height: 12px;
+            }
+
+            .calendar-heatmap {
+                gap: 2px;
+            }
+
+            .calendar-week {
+                gap: 2px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -481,6 +594,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 禁煙継続カレンダー -->
+            <div class="calendar-card">
+                <h2>禁煙継続カレンダー</h2>
+                <div id="calendarHeatmap" class="calendar-heatmap"></div>
+                <div class="calendar-legend">
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #f8f9fa; border: 1px dashed #e0e0e0;"></div>
+                        <span>未到達</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #84fab0;"></div>
+                        <span>継続中</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #28a745;"></div>
+                        <span>完璧な1日</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #ffc107;"></div>
+                        <span>渇望あり</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #dc3545;"></div>
+                        <span>スリップ</span>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-tooltip" id="calendarTooltip"></div>
 
             <!-- 統計カード -->
             <div class="stats-grid">
@@ -565,6 +707,7 @@
         // グローバル変数
         let quitData = null;
         let updateInterval = null;
+        let calendarData = {};
 
         // 健康マイルストーン（医学的根拠に基づく）
         const healthMilestones = [
@@ -723,10 +866,17 @@
         // データの保存
         function saveData() {
             localStorage.setItem('quitData', JSON.stringify(quitData));
+            localStorage.setItem('calendarData', JSON.stringify(calendarData));
         }
 
         // データの読み込み
         function loadData() {
+            // カレンダーデータの読み込み
+            const savedCalendar = localStorage.getItem('calendarData');
+            if (savedCalendar) {
+                calendarData = JSON.parse(savedCalendar);
+            }
+
             // まずURLクエリパラメータをチェック
             const urlData = loadDataFromURL();
             if (urlData) {
@@ -766,6 +916,7 @@
 
         // 定期更新の開始
         function startUpdating() {
+            initTodayCalendarData();
             updateDashboard();
             updateInterval = setInterval(updateDashboard, 1000);
         }
@@ -821,6 +972,144 @@
             // モチベーションメッセージの更新（1日ごとに変更）
             const messageIndex = days % motivationMessages.length;
             document.getElementById('motivationText').textContent = motivationMessages[messageIndex];
+
+            // カレンダーヒートマップの更新
+            updateCalendarHeatmap();
+        }
+
+        // カレンダーヒートマップの生成と更新
+        function updateCalendarHeatmap() {
+            const container = document.getElementById('calendarHeatmap');
+            container.innerHTML = '';
+
+            const today = new Date();
+            const quitDate = new Date(quitData.quitDate);
+
+            // 52週間分のカレンダーを生成
+            const weeks = 52;
+            const startDate = new Date(today);
+            startDate.setDate(startDate.getDate() - (weeks * 7));
+
+            for (let week = 0; week < weeks; week++) {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'calendar-week';
+
+                for (let day = 0; day < 7; day++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + (week * 7) + day);
+
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-day';
+
+                    const dateStr = formatDateStr(currentDate);
+                    dayDiv.dataset.date = dateStr;
+
+                    // 日付の状態を判定
+                    if (currentDate > today) {
+                        // 未来の日付
+                        dayDiv.classList.add('future');
+                    } else if (currentDate < quitDate) {
+                        // 禁煙開始前の日付
+                        dayDiv.classList.add('future');
+                    } else {
+                        // 禁煙開始後の日付
+                        const dayData = calendarData[dateStr];
+                        if (dayData) {
+                            if (dayData.status === 'slip') {
+                                dayDiv.classList.add('slip');
+                            } else if (dayData.cravingCount > 0) {
+                                dayDiv.classList.add('has-craving');
+                            } else {
+                                dayDiv.classList.add('success-perfect');
+                            }
+                        } else {
+                            // データがない場合は継続中として扱う
+                            dayDiv.classList.add('success-light');
+                        }
+                    }
+
+                    // ホバー時のツールチップ
+                    dayDiv.addEventListener('mouseenter', function(e) {
+                        showCalendarTooltip(e, currentDate, dateStr);
+                    });
+
+                    dayDiv.addEventListener('mouseleave', function() {
+                        hideCalendarTooltip();
+                    });
+
+                    weekDiv.appendChild(dayDiv);
+                }
+
+                container.appendChild(weekDiv);
+            }
+        }
+
+        // 日付を文字列にフォーマット（YYYY-MM-DD）
+        function formatDateStr(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // カレンダーツールチップの表示
+        function showCalendarTooltip(event, date, dateStr) {
+            const tooltip = document.getElementById('calendarTooltip');
+            const dayData = calendarData[dateStr];
+            const today = new Date();
+            const quitDate = new Date(quitData.quitDate);
+
+            let content = '';
+
+            if (date > today) {
+                content = `${dateStr}<br>未到達`;
+            } else if (date < quitDate) {
+                content = `${dateStr}<br>禁煙開始前`;
+            } else {
+                const daysDiff = Math.floor((date - quitDate) / (1000 * 60 * 60 * 24)) + 1;
+                content = `${dateStr}<br>禁煙${daysDiff}日目`;
+
+                if (dayData) {
+                    if (dayData.status === 'slip') {
+                        content += '<br>❌ スリップ';
+                    } else if (dayData.cravingCount > 0) {
+                        content += `<br>⚠️ 渇望${dayData.cravingCount}回`;
+                    } else {
+                        content += '<br>✓ 完璧な1日';
+                    }
+                    if (dayData.notes) {
+                        content += `<br>${dayData.notes}`;
+                    }
+                } else {
+                    content += '<br>✓ 禁煙継続中';
+                }
+            }
+
+            tooltip.innerHTML = content;
+            tooltip.style.display = 'block';
+
+            const rect = event.target.getBoundingClientRect();
+            tooltip.style.left = (rect.left + window.scrollX) + 'px';
+            tooltip.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+        }
+
+        // カレンダーツールチップの非表示
+        function hideCalendarTooltip() {
+            const tooltip = document.getElementById('calendarTooltip');
+            tooltip.style.display = 'none';
+        }
+
+        // 今日のカレンダーデータを初期化（まだ存在しない場合）
+        function initTodayCalendarData() {
+            const today = formatDateStr(new Date());
+            if (!calendarData[today]) {
+                calendarData[today] = {
+                    status: 'success',
+                    cravingCount: 0,
+                    notes: ''
+                };
+                saveData();
+            }
         }
 
         // マイルストーンの更新
