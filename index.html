@@ -424,6 +424,802 @@
             opacity: 0.8;
             margin-top: 5px;
         }
+
+        /* 禁煙継続カレンダー（GitHub風ヒートマップ） */
+        .calendar-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .calendar-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .calendar-heatmap {
+            display: flex;
+            gap: 3px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .calendar-week {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .calendar-day {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            background: #ebedf0;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .calendar-day.future {
+            background: #f8f9fa;
+            border: 1px dashed #e0e0e0;
+        }
+
+        .calendar-day.success-light {
+            background: #84fab0;
+        }
+
+        .calendar-day.success-perfect {
+            background: #28a745;
+        }
+
+        .calendar-day.has-craving {
+            background: #ffc107;
+        }
+
+        .calendar-day.slip {
+            background: #dc3545;
+        }
+
+        .calendar-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .calendar-legend {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .calendar-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .calendar-legend-box {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-day {
+                width: 12px;
+                height: 12px;
+            }
+
+            .calendar-heatmap {
+                gap: 2px;
+            }
+
+            .calendar-week {
+                gap: 2px;
+            }
+        }
+
+        /* 渇望記録システム */
+        .fab-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(245, 87, 108, 0.5);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(245, 87, 108, 0.7);
+        }
+
+        .fab-button:active {
+            transform: scale(0.95);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .intensity-slider-container {
+            margin: 20px 0;
+        }
+
+        .intensity-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #84fab0 0%, #ffc107 50%, #dc3545 100%);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .intensity-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .intensity-value {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .radio-option label:hover {
+            border-color: #667eea;
+        }
+
+        .cravings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .cravings-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .craving-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .craving-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .craving-time {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .craving-intensity {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .craving-details {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .craving-details strong {
+            color: #333;
+        }
+
+        .craving-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .craving-stat-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .craving-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .craving-stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .fab-button {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .radio-option {
+                min-width: 80px;
+            }
+        }
+
+        /* 対処法データベース */
+        .coping-strategies-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .coping-strategies-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .strategy-categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-filter {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .category-filter.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .category-filter:hover {
+            border-color: #667eea;
+        }
+
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .strategy-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .strategy-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .strategy-emoji {
+            font-size: 2em;
+        }
+
+        .strategy-favorite {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .strategy-favorite:hover {
+            transform: scale(1.2);
+        }
+
+        .strategy-favorite.active {
+            color: #ffc107;
+        }
+
+        .strategy-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .strategy-duration {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .strategy-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .strategy-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .strategy-use-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .strategy-use-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 緊急SOSボタン */
+        .sos-button {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: none;
+            font-size: 2.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(220, 53, 69, 0.6);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-sos 2s infinite;
+        }
+
+        @keyframes pulse-sos {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sos-button:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(220, 53, 69, 0.8);
+        }
+
+        .sos-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(220, 53, 69, 0.95);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .sos-overlay.active {
+            display: flex;
+        }
+
+        .sos-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .sos-title {
+            font-size: 2.5em;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .sos-message {
+            font-size: 1.3em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .sos-stats {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sos-stats-item {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .sos-countdown {
+            font-size: 4em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        .sos-actions {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sos-action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sos-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .sos-overcome-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            font-size: 1.2em;
+            padding: 18px 40px;
+        }
+
+        @media (max-width: 768px) {
+            .sos-button {
+                bottom: 80px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+            }
+
+            .sos-content {
+                padding: 25px;
+            }
+
+            .sos-title {
+                font-size: 2em;
+            }
+
+            .sos-message {
+                font-size: 1.1em;
+            }
+        }
+
+        /* なぜ禁煙？リマインダー */
+        .why-quit-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .why-quit-card h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .reason-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .reason-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .reason-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .reason-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reason-emoji {
+            font-size: 2em;
+        }
+
+        .reason-text {
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .add-reason-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .add-reason-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* 購入シミュレーター */
+        .purchase-simulator-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .purchase-simulator-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .purchase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .purchase-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .purchase-item.affordable {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .purchase-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .purchase-emoji {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .purchase-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .purchase-price {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .purchase-status {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .purchase-status.achieved {
+            color: #28a745;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -482,6 +1278,35 @@
                 </div>
             </div>
 
+            <!-- 禁煙継続カレンダー -->
+            <div class="calendar-card">
+                <h2>禁煙継続カレンダー</h2>
+                <div id="calendarHeatmap" class="calendar-heatmap"></div>
+                <div class="calendar-legend">
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #f8f9fa; border: 1px dashed #e0e0e0;"></div>
+                        <span>未到達</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #84fab0;"></div>
+                        <span>継続中</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #28a745;"></div>
+                        <span>完璧な1日</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #ffc107;"></div>
+                        <span>渇望あり</span>
+                    </div>
+                    <div class="calendar-legend-item">
+                        <div class="calendar-legend-box" style="background: #dc3545;"></div>
+                        <span>スリップ</span>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar-tooltip" id="calendarTooltip"></div>
+
             <!-- 統計カード -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -504,6 +1329,19 @@
                     <div class="stat-value" id="healthScore">0%</div>
                     <div class="stat-label">健康回復度</div>
                 </div>
+            </div>
+
+            <!-- 購入シミュレーター -->
+            <div class="purchase-simulator-card">
+                <h2>節約金額で買えるもの</h2>
+                <div class="purchase-grid" id="purchaseGrid"></div>
+            </div>
+
+            <!-- なぜ禁煙？リマインダー -->
+            <div class="why-quit-card">
+                <h2>💪 なぜ禁煙？</h2>
+                <div class="reason-list" id="reasonList"></div>
+                <button class="add-reason-btn" id="addReasonBtn">+ 理由を追加</button>
             </div>
 
             <!-- モチベーションメッセージ -->
@@ -556,8 +1394,120 @@
                 <div class="badges-grid" id="badges"></div>
             </div>
 
+            <!-- 対処法データベース -->
+            <div class="coping-strategies-card">
+                <h2>対処法データベース</h2>
+                <div class="strategy-categories">
+                    <button class="category-filter active" data-category="all">すべて</button>
+                    <button class="category-filter" data-category="即効性">即効性（1-5分）</button>
+                    <button class="category-filter" data-category="中期対策">中期対策（10-30分）</button>
+                    <button class="category-filter" data-category="長期戦略">長期戦略</button>
+                    <button class="category-filter" data-category="favorite">お気に入り</button>
+                </div>
+                <div class="strategy-grid" id="strategyGrid"></div>
+            </div>
+
+            <!-- 渇望記録一覧 -->
+            <div class="cravings-card">
+                <h2>渇望記録</h2>
+                <div class="craving-stats" id="cravingStats">
+                    <div class="craving-stat-box">
+                        <div class="craving-stat-value" id="totalCravings">0</div>
+                        <div class="craving-stat-label">総渇望回数</div>
+                    </div>
+                    <div class="craving-stat-box">
+                        <div class="craving-stat-value" id="avgIntensity">0</div>
+                        <div class="craving-stat-label">平均強度</div>
+                    </div>
+                    <div class="craving-stat-box">
+                        <div class="craving-stat-value" id="todayCravings">0</div>
+                        <div class="craving-stat-label">今日の渇望</div>
+                    </div>
+                </div>
+                <div id="cravingsList"></div>
+            </div>
+
             <button class="btn" id="shareBtn">🔗 進捗を共有するURLをコピー</button>
             <button class="btn btn-secondary" id="resetBtn">データをリセット</button>
+        </div>
+    </div>
+
+    <!-- 渇望記録FABボタン -->
+    <button class="fab-button hidden" id="cravingFab" title="吸いたくなった">🚬</button>
+
+    <!-- 緊急SOSボタン -->
+    <button class="sos-button hidden" id="sosButton" title="緊急SOS">🆘</button>
+
+    <!-- 緊急SOSオーバーレイ -->
+    <div class="sos-overlay" id="sosOverlay">
+        <div class="sos-content">
+            <div class="sos-title">🚨 ちょっと待って！</div>
+            <div class="sos-message" id="sosMessage"></div>
+            <div class="sos-stats" id="sosStats"></div>
+            <div class="sos-countdown" id="sosCountdown">5:00</div>
+            <div class="sos-actions">
+                <button class="sos-action-btn" onclick="alert('深呼吸：4秒吸って、7秒止めて、8秒吐く')">🫁 深呼吸する</button>
+                <button class="sos-action-btn" onclick="alert('水を飲みましょう！')">💧 水を飲む</button>
+                <button class="sos-action-btn" onclick="alert('短い散歩に行きましょう')">🚶 散歩する</button>
+            </div>
+            <button class="sos-action-btn sos-overcome-btn" id="sosOvercomeBtn">✓ 乗り越えた！</button>
+        </div>
+    </div>
+
+    <!-- 渇望記録モーダル -->
+    <div class="modal-overlay" id="cravingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>渇望を記録</h2>
+                <button class="modal-close" id="closeCravingModal">×</button>
+            </div>
+            <form id="cravingForm">
+                <div class="form-group">
+                    <label>渇望の強さ（1-10）</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" class="intensity-slider" id="intensitySlider" min="1" max="10" value="5">
+                        <div class="intensity-value" id="intensityValue">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>状況</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="sit1" name="situation" value="仕事中" checked>
+                            <label for="sit1">仕事中</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit2" name="situation" value="食後">
+                            <label for="sit2">食後</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit3" name="situation" value="飲酒時">
+                            <label for="sit3">飲酒時</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit4" name="situation" value="ストレス">
+                            <label for="sit4">ストレス</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit5" name="situation" value="その他">
+                            <label for="sit5">その他</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cravingTrigger">トリガー</label>
+                    <input type="text" id="cravingTrigger" placeholder="何がきっかけですか？">
+                </div>
+
+                <div class="form-group">
+                    <label for="cravingNotes">メモ（任意）</label>
+                    <input type="text" id="cravingNotes" placeholder="気持ちや状況を記録...">
+                </div>
+
+                <button type="submit" class="btn">記録する</button>
+            </form>
         </div>
     </div>
 
@@ -565,6 +1515,13 @@
         // グローバル変数
         let quitData = null;
         let updateInterval = null;
+        let calendarData = {};
+        let cravings = [];
+        let copingStrategies = [];
+        let currentStrategyFilter = 'all';
+        let sosHistory = [];
+        let sosCountdownInterval = null;
+        let reasons = [];
 
         // 健康マイルストーン（医学的根拠に基づく）
         const healthMilestones = [
@@ -594,6 +1551,142 @@
             { id: 'money-saver', condition: 'money', threshold: 10000, name: '節約1万円', icon: '💰' },
             { id: 'big-saver', condition: 'money', threshold: 50000, name: '節約5万円', icon: '💵' },
             { id: 'mega-saver', condition: 'money', threshold: 100000, name: '節約10万円', icon: '💴' }
+        ];
+
+        // 対処法の初期データ
+        const defaultCopingStrategies = [
+            {
+                id: "deep-breathing",
+                name: "深呼吸エクササイズ",
+                category: "即効性",
+                duration: "2-3分",
+                emoji: "🫁",
+                description: "4秒吸って、7秒止めて、8秒吐く。これを3-5回繰り返します。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "water-drink",
+                name: "水を飲む",
+                category: "即効性",
+                duration: "1分",
+                emoji: "💧",
+                description: "コップ1杯の水をゆっくり飲みます。口の中をリフレッシュ。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "hand-massage",
+                name: "手のマッサージ",
+                category: "即効性",
+                duration: "2-3分",
+                emoji: "🤲",
+                description: "手のツボを押したり、指を揉んだりします。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "walk",
+                name: "短い散歩",
+                category: "中期対策",
+                duration: "10-15分",
+                emoji: "🚶",
+                description: "外の空気を吸いながら歩きます。環境を変えることが効果的。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "call-friend",
+                name: "友人に電話",
+                category: "中期対策",
+                duration: "5-10分",
+                emoji: "📞",
+                description: "サポートしてくれる人と話します。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "snack",
+                name: "健康的なスナック",
+                category: "即効性",
+                duration: "3-5分",
+                emoji: "🥕",
+                description: "ニンジンスティック、ガム、ナッツなどを食べます。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "exercise",
+                name: "軽い運動",
+                category: "中期対策",
+                duration: "15-30分",
+                emoji: "🏃",
+                description: "ジョギング、ストレッチ、ヨガなど体を動かします。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "hobby",
+                name: "趣味に没頭",
+                category: "長期戦略",
+                duration: "30分以上",
+                emoji: "🎨",
+                description: "読書、音楽、ゲーム、クラフトなど好きなことをします。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "meditation",
+                name: "瞑想・マインドフルネス",
+                category: "中期対策",
+                duration: "10-20分",
+                emoji: "🧘",
+                description: "静かに座って、呼吸に意識を向けます。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            },
+            {
+                id: "support-group",
+                name: "サポートグループ参加",
+                category: "長期戦略",
+                duration: "継続的",
+                emoji: "👥",
+                description: "禁煙仲間とのコミュニティに参加します。",
+                effectiveness: 0,
+                timesUsed: 0,
+                favorite: false
+            }
+        ];
+
+        // 購入シミュレーター商品リスト
+        const purchaseSimulations = [
+            { name: "美味しいランチ", price: 1000, emoji: "🍱" },
+            { name: "新刊本", price: 1500, emoji: "📚" },
+            { name: "映画鑑賞", price: 2000, emoji: "🎬" },
+            { name: "おしゃれなカフェ", price: 3000, emoji: "☕" },
+            { name: "良いヘッドホン", price: 15000, emoji: "🎧" },
+            { name: "週末温泉旅行", price: 30000, emoji: "♨️" },
+            { name: "最新ゲーム機", price: 50000, emoji: "🎮" },
+            { name: "高級レストラン", price: 20000, emoji: "🍽️" },
+            { name: "ブランド財布", price: 40000, emoji: "👛" },
+            { name: "国内旅行", price: 100000, emoji: "🗾" },
+            { name: "海外旅行", price: 200000, emoji: "✈️" }
+        ];
+
+        // デフォルトの禁煙理由
+        const defaultReasons = [
+            { id: 'health', emoji: '❤️', text: '健康のために', category: '健康' },
+            { id: 'money', emoji: '💰', text: 'お金を節約したい', category: 'お金' },
+            { id: 'family', emoji: '👨‍👩‍👧‍👦', text: '家族のために', category: '家族' }
         ];
 
         // モチベーションメッセージ
@@ -684,6 +1777,36 @@
             document.getElementById('setupForm').addEventListener('submit', handleSetup);
             document.getElementById('resetBtn').addEventListener('click', handleReset);
             document.getElementById('shareBtn').addEventListener('click', copyShareURL);
+
+            // 渇望記録関連
+            document.getElementById('cravingFab').addEventListener('click', openCravingModal);
+            document.getElementById('closeCravingModal').addEventListener('click', closeCravingModal);
+            document.getElementById('cravingModal').addEventListener('click', function(e) {
+                if (e.target.id === 'cravingModal') {
+                    closeCravingModal();
+                }
+            });
+            document.getElementById('cravingForm').addEventListener('submit', handleCravingSubmit);
+            document.getElementById('intensitySlider').addEventListener('input', function(e) {
+                document.getElementById('intensityValue').textContent = e.target.value;
+            });
+
+            // 対処法のカテゴリーフィルター
+            document.querySelectorAll('.category-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.category-filter').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentStrategyFilter = this.dataset.category;
+                    displayCopingStrategies();
+                });
+            });
+
+            // SOS関連
+            document.getElementById('sosButton').addEventListener('click', openSOS);
+            document.getElementById('sosOvercomeBtn').addEventListener('click', closeSOS);
+
+            // 禁煙理由
+            document.getElementById('addReasonBtn').addEventListener('click', addReason);
         }
 
         // セットアップフォームの処理
@@ -723,10 +1846,51 @@
         // データの保存
         function saveData() {
             localStorage.setItem('quitData', JSON.stringify(quitData));
+            localStorage.setItem('calendarData', JSON.stringify(calendarData));
+            localStorage.setItem('cravings', JSON.stringify(cravings));
+            localStorage.setItem('copingStrategies', JSON.stringify(copingStrategies));
+            localStorage.setItem('sosHistory', JSON.stringify(sosHistory));
+            localStorage.setItem('reasons', JSON.stringify(reasons));
         }
 
         // データの読み込み
         function loadData() {
+            // カレンダーデータの読み込み
+            const savedCalendar = localStorage.getItem('calendarData');
+            if (savedCalendar) {
+                calendarData = JSON.parse(savedCalendar);
+            }
+
+            // 渇望記録の読み込み
+            const savedCravings = localStorage.getItem('cravings');
+            if (savedCravings) {
+                cravings = JSON.parse(savedCravings);
+            }
+
+            // 対処法の読み込み（初回はデフォルトデータを使用）
+            const savedStrategies = localStorage.getItem('copingStrategies');
+            if (savedStrategies) {
+                copingStrategies = JSON.parse(savedStrategies);
+            } else {
+                copingStrategies = [...defaultCopingStrategies];
+                saveData();
+            }
+
+            // SOS履歴の読み込み
+            const savedSosHistory = localStorage.getItem('sosHistory');
+            if (savedSosHistory) {
+                sosHistory = JSON.parse(savedSosHistory);
+            }
+
+            // 禁煙理由の読み込み（初回はデフォルトデータを使用）
+            const savedReasons = localStorage.getItem('reasons');
+            if (savedReasons) {
+                reasons = JSON.parse(savedReasons);
+            } else {
+                reasons = [...defaultReasons];
+                saveData();
+            }
+
             // まずURLクエリパラメータをチェック
             const urlData = loadDataFromURL();
             if (urlData) {
@@ -762,10 +1926,15 @@
             document.getElementById('setup').style.display = 'none';
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('cravingFab').classList.remove('hidden');
+            document.getElementById('sosButton').classList.remove('hidden');
         }
 
         // 定期更新の開始
         function startUpdating() {
+            initTodayCalendarData();
+            displayCopingStrategies();
+            displayReasons();
             updateDashboard();
             updateInterval = setInterval(updateDashboard, 1000);
         }
@@ -821,6 +1990,481 @@
             // モチベーションメッセージの更新（1日ごとに変更）
             const messageIndex = days % motivationMessages.length;
             document.getElementById('motivationText').textContent = motivationMessages[messageIndex];
+
+            // カレンダーヒートマップの更新
+            updateCalendarHeatmap();
+
+            // 渇望記録の更新
+            updateCravingsDisplay();
+
+            // 購入シミュレーターの更新
+            updatePurchaseSimulator(moneySaved);
+        }
+
+        // カレンダーヒートマップの生成と更新
+        function updateCalendarHeatmap() {
+            const container = document.getElementById('calendarHeatmap');
+            container.innerHTML = '';
+
+            const today = new Date();
+            const quitDate = new Date(quitData.quitDate);
+
+            // 52週間分のカレンダーを生成
+            const weeks = 52;
+            const startDate = new Date(today);
+            startDate.setDate(startDate.getDate() - (weeks * 7));
+
+            for (let week = 0; week < weeks; week++) {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'calendar-week';
+
+                for (let day = 0; day < 7; day++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + (week * 7) + day);
+
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'calendar-day';
+
+                    const dateStr = formatDateStr(currentDate);
+                    dayDiv.dataset.date = dateStr;
+
+                    // 日付の状態を判定
+                    if (currentDate > today) {
+                        // 未来の日付
+                        dayDiv.classList.add('future');
+                    } else if (currentDate < quitDate) {
+                        // 禁煙開始前の日付
+                        dayDiv.classList.add('future');
+                    } else {
+                        // 禁煙開始後の日付
+                        const dayData = calendarData[dateStr];
+                        if (dayData) {
+                            if (dayData.status === 'slip') {
+                                dayDiv.classList.add('slip');
+                            } else if (dayData.cravingCount > 0) {
+                                dayDiv.classList.add('has-craving');
+                            } else {
+                                dayDiv.classList.add('success-perfect');
+                            }
+                        } else {
+                            // データがない場合は継続中として扱う
+                            dayDiv.classList.add('success-light');
+                        }
+                    }
+
+                    // ホバー時のツールチップ
+                    dayDiv.addEventListener('mouseenter', function(e) {
+                        showCalendarTooltip(e, currentDate, dateStr);
+                    });
+
+                    dayDiv.addEventListener('mouseleave', function() {
+                        hideCalendarTooltip();
+                    });
+
+                    weekDiv.appendChild(dayDiv);
+                }
+
+                container.appendChild(weekDiv);
+            }
+        }
+
+        // 日付を文字列にフォーマット（YYYY-MM-DD）
+        function formatDateStr(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // カレンダーツールチップの表示
+        function showCalendarTooltip(event, date, dateStr) {
+            const tooltip = document.getElementById('calendarTooltip');
+            const dayData = calendarData[dateStr];
+            const today = new Date();
+            const quitDate = new Date(quitData.quitDate);
+
+            let content = '';
+
+            if (date > today) {
+                content = `${dateStr}<br>未到達`;
+            } else if (date < quitDate) {
+                content = `${dateStr}<br>禁煙開始前`;
+            } else {
+                const daysDiff = Math.floor((date - quitDate) / (1000 * 60 * 60 * 24)) + 1;
+                content = `${dateStr}<br>禁煙${daysDiff}日目`;
+
+                if (dayData) {
+                    if (dayData.status === 'slip') {
+                        content += '<br>❌ スリップ';
+                    } else if (dayData.cravingCount > 0) {
+                        content += `<br>⚠️ 渇望${dayData.cravingCount}回`;
+                    } else {
+                        content += '<br>✓ 完璧な1日';
+                    }
+                    if (dayData.notes) {
+                        content += `<br>${dayData.notes}`;
+                    }
+                } else {
+                    content += '<br>✓ 禁煙継続中';
+                }
+            }
+
+            tooltip.innerHTML = content;
+            tooltip.style.display = 'block';
+
+            const rect = event.target.getBoundingClientRect();
+            tooltip.style.left = (rect.left + window.scrollX) + 'px';
+            tooltip.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+        }
+
+        // カレンダーツールチップの非表示
+        function hideCalendarTooltip() {
+            const tooltip = document.getElementById('calendarTooltip');
+            tooltip.style.display = 'none';
+        }
+
+        // 今日のカレンダーデータを初期化（まだ存在しない場合）
+        function initTodayCalendarData() {
+            const today = formatDateStr(new Date());
+            if (!calendarData[today]) {
+                calendarData[today] = {
+                    status: 'success',
+                    cravingCount: 0,
+                    notes: ''
+                };
+                saveData();
+            }
+        }
+
+        // 渇望記録モーダルを開く
+        function openCravingModal() {
+            document.getElementById('cravingModal').classList.add('active');
+            document.getElementById('intensitySlider').value = 5;
+            document.getElementById('intensityValue').textContent = 5;
+        }
+
+        // 渇望記録モーダルを閉じる
+        function closeCravingModal() {
+            document.getElementById('cravingModal').classList.remove('active');
+            document.getElementById('cravingForm').reset();
+        }
+
+        // 渇望記録フォームの送信処理
+        function handleCravingSubmit(e) {
+            e.preventDefault();
+
+            const intensity = parseInt(document.getElementById('intensitySlider').value);
+            const situation = document.querySelector('input[name="situation"]:checked').value;
+            const trigger = document.getElementById('cravingTrigger').value;
+            const notes = document.getElementById('cravingNotes').value;
+
+            const craving = {
+                id: new Date().getTime().toString(),
+                timestamp: new Date().toISOString(),
+                intensity: intensity,
+                situation: situation,
+                trigger: trigger,
+                copingMethod: '',
+                notes: notes,
+                resolved: false
+            };
+
+            cravings.unshift(craving);
+
+            // 今日のカレンダーデータを更新
+            const today = formatDateStr(new Date());
+            if (calendarData[today]) {
+                calendarData[today].cravingCount++;
+            }
+
+            saveData();
+            closeCravingModal();
+            updateCravingsDisplay();
+            updateCalendarHeatmap();
+
+            // 渇望記録後のメッセージ表示（オプション）
+            alert('渇望を記録しました。深呼吸をして、水を飲みましょう。この感覚は必ず消えます。');
+        }
+
+        // 渇望記録の表示更新
+        function updateCravingsDisplay() {
+            // 統計情報の更新
+            const totalCravings = cravings.length;
+            const avgIntensity = totalCravings > 0
+                ? (cravings.reduce((sum, c) => sum + c.intensity, 0) / totalCravings).toFixed(1)
+                : 0;
+
+            const today = formatDateStr(new Date());
+            const todayCravings = cravings.filter(c => {
+                const cravingDate = formatDateStr(new Date(c.timestamp));
+                return cravingDate === today;
+            }).length;
+
+            document.getElementById('totalCravings').textContent = totalCravings;
+            document.getElementById('avgIntensity').textContent = avgIntensity;
+            document.getElementById('todayCravings').textContent = todayCravings;
+
+            // 渇望記録一覧の更新
+            const listContainer = document.getElementById('cravingsList');
+            listContainer.innerHTML = '';
+
+            if (cravings.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">まだ渇望記録がありません</p>';
+                return;
+            }
+
+            // 最新10件を表示
+            const recentCravings = cravings.slice(0, 10);
+            recentCravings.forEach(craving => {
+                const div = document.createElement('div');
+                div.className = 'craving-item';
+
+                const date = new Date(craving.timestamp);
+                const timeStr = date.toLocaleString('ja-JP', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                div.innerHTML = `
+                    <div class="craving-header">
+                        <div class="craving-time">${timeStr}</div>
+                        <div class="craving-intensity">強度: ${craving.intensity}/10</div>
+                    </div>
+                    <div class="craving-details">
+                        <strong>状況:</strong> ${craving.situation}<br>
+                        ${craving.trigger ? `<strong>トリガー:</strong> ${craving.trigger}<br>` : ''}
+                        ${craving.notes ? `<strong>メモ:</strong> ${craving.notes}` : ''}
+                    </div>
+                `;
+
+                listContainer.appendChild(div);
+            });
+        }
+
+        // 対処法の表示
+        function displayCopingStrategies() {
+            const container = document.getElementById('strategyGrid');
+            container.innerHTML = '';
+
+            let filteredStrategies = copingStrategies;
+
+            if (currentStrategyFilter === 'favorite') {
+                filteredStrategies = copingStrategies.filter(s => s.favorite);
+            } else if (currentStrategyFilter !== 'all') {
+                filteredStrategies = copingStrategies.filter(s => s.category === currentStrategyFilter);
+            }
+
+            if (filteredStrategies.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px; grid-column: 1/-1;">該当する対処法がありません</p>';
+                return;
+            }
+
+            filteredStrategies.forEach(strategy => {
+                const div = document.createElement('div');
+                div.className = 'strategy-item';
+
+                const favoriteClass = strategy.favorite ? 'active' : '';
+
+                div.innerHTML = `
+                    <div class="strategy-header">
+                        <div class="strategy-emoji">${strategy.emoji}</div>
+                        <button class="strategy-favorite ${favoriteClass}" data-id="${strategy.id}">⭐</button>
+                    </div>
+                    <div class="strategy-name">${strategy.name}</div>
+                    <div class="strategy-duration">⏱️ ${strategy.duration}</div>
+                    <div class="strategy-description">${strategy.description}</div>
+                    <div class="strategy-stats">
+                        <span>使用回数: ${strategy.timesUsed}</span>
+                    </div>
+                    <button class="strategy-use-btn" data-id="${strategy.id}">この対処法を試す</button>
+                `;
+
+                container.appendChild(div);
+            });
+
+            // イベントリスナーの追加
+            container.querySelectorAll('.strategy-favorite').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toggleStrategyFavorite(this.dataset.id);
+                });
+            });
+
+            container.querySelectorAll('.strategy-use-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    useStrategy(this.dataset.id);
+                });
+            });
+        }
+
+        // 対処法のお気に入りトグル
+        function toggleStrategyFavorite(id) {
+            const strategy = copingStrategies.find(s => s.id === id);
+            if (strategy) {
+                strategy.favorite = !strategy.favorite;
+                saveData();
+                displayCopingStrategies();
+            }
+        }
+
+        // 対処法を使用
+        function useStrategy(id) {
+            const strategy = copingStrategies.find(s => s.id === id);
+            if (strategy) {
+                strategy.timesUsed++;
+                saveData();
+                displayCopingStrategies();
+                alert(`「${strategy.name}」を実行します。${strategy.duration}かかります。\n\n${strategy.description}`);
+            }
+        }
+
+        // SOS画面を開く
+        function openSOS() {
+            const now = new Date();
+            const quitDate = new Date(quitData.quitDate);
+            const diffMs = now - quitDate;
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const days = Math.floor(diffMinutes / 1440);
+
+            const cigarettesAvoided = Math.floor((diffMinutes / 1440) * quitData.cigarettesPerDay);
+            const moneySaved = Math.floor(cigarettesAvoided * quitData.pricePerCigarette);
+
+            // メッセージの設定
+            document.getElementById('sosMessage').innerHTML = `
+                あなたはここまで<strong>${days}日間</strong>頑張ってきました！<br>
+                <strong>¥${moneySaved.toLocaleString()}</strong>も節約しています！<br>
+                <strong>${cigarettesAvoided}本</strong>のタバコを避けました！<br><br>
+                あと5分だけ待ちましょう。<br>
+                この感覚は必ず消えます。
+            `;
+
+            // 統計の設定
+            document.getElementById('sosStats').innerHTML = `
+                <div class="sos-stats-item">🏆 ${days}日間の継続</div>
+                <div class="sos-stats-item">💰 ¥${moneySaved.toLocaleString()} 節約</div>
+                <div class="sos-stats-item">🚬 ${cigarettesAvoided}本 回避</div>
+            `;
+
+            // オーバーレイを表示
+            document.getElementById('sosOverlay').classList.add('active');
+
+            // カウントダウン開始（5分）
+            let remainingSeconds = 300;
+            const countdownEl = document.getElementById('sosCountdown');
+
+            if (sosCountdownInterval) {
+                clearInterval(sosCountdownInterval);
+            }
+
+            sosCountdownInterval = setInterval(() => {
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+                countdownEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                remainingSeconds--;
+
+                if (remainingSeconds < 0) {
+                    clearInterval(sosCountdownInterval);
+                    countdownEl.textContent = '時間です！';
+                }
+            }, 1000);
+        }
+
+        // SOS画面を閉じる
+        function closeSOS() {
+            if (sosCountdownInterval) {
+                clearInterval(sosCountdownInterval);
+            }
+
+            // 成功を記録
+            sosHistory.push({
+                timestamp: new Date().toISOString(),
+                success: true
+            });
+
+            saveData();
+
+            document.getElementById('sosOverlay').classList.remove('active');
+
+            alert('素晴らしい！あなたは渇望を乗り越えました！この勝利を誇りに思ってください！');
+        }
+
+        // 禁煙理由の表示
+        function displayReasons() {
+            const container = document.getElementById('reasonList');
+            container.innerHTML = '';
+
+            if (reasons.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.8;">まだ理由が登録されていません</p>';
+                return;
+            }
+
+            reasons.forEach(reason => {
+                const div = document.createElement('div');
+                div.className = 'reason-item';
+
+                div.innerHTML = `
+                    <div class="reason-header">
+                        <span class="reason-emoji">${reason.emoji}</span>
+                    </div>
+                    <div class="reason-text">${reason.text}</div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        // 禁煙理由を追加
+        function addReason() {
+            const text = prompt('禁煙する理由を入力してください:');
+            if (!text) return;
+
+            const emojis = ['❤️', '💰', '👨‍👩‍👧‍👦', '✨', '🕊️', '💪', '🌟', '🎯'];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+            reasons.push({
+                id: new Date().getTime().toString(),
+                emoji: emoji,
+                text: text,
+                category: 'カスタム'
+            });
+
+            saveData();
+            displayReasons();
+        }
+
+        // 購入シミュレーターの更新
+        function updatePurchaseSimulator(moneySaved) {
+            const container = document.getElementById('purchaseGrid');
+            container.innerHTML = '';
+
+            purchaseSimulations.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'purchase-item';
+
+                const canAfford = moneySaved >= item.price;
+                if (canAfford) {
+                    div.classList.add('affordable');
+                }
+
+                let statusText = '';
+                if (canAfford) {
+                    const count = Math.floor(moneySaved / item.price);
+                    statusText = `<div class="purchase-status achieved">✓ ${count}個買える！</div>`;
+                } else {
+                    const remaining = item.price - moneySaved;
+                    statusText = `<div class="purchase-status">あと¥${remaining.toLocaleString()}</div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="purchase-emoji">${item.emoji}</div>
+                    <div class="purchase-name">${item.name}</div>
+                    <div class="purchase-price">¥${item.price.toLocaleString()}</div>
+                    ${statusText}
+                `;
+
+                container.appendChild(div);
+            });
         }
 
         // マイルストーンの更新
