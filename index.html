@@ -168,6 +168,7 @@
             border-left: 5px solid #e0e0e0;
             background: #f8f9fa;
             transition: all 0.3s;
+            position: relative;
         }
 
         .milestone.achieved {
@@ -181,15 +182,54 @@
             background: linear-gradient(135deg, #fff9e6 0%, #ffe8a1 100%);
         }
 
+        .milestone.upcoming {
+            border-left-color: #ccc;
+            background: #ffffff;
+            opacity: 0.9;
+        }
+
+        .milestone-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .milestone.achieved .milestone-status {
+            background: #28a745;
+            color: white;
+        }
+
+        .milestone.next .milestone-status {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .milestone.upcoming .milestone-status {
+            background: #e0e0e0;
+            color: #666;
+        }
+
         .milestone-time {
             font-weight: bold;
             color: #667eea;
             margin-bottom: 5px;
+            font-size: 1.1em;
         }
 
         .milestone-benefit {
             color: #555;
             line-height: 1.6;
+        }
+
+        .milestone-remaining {
+            margin-top: 8px;
+            color: #888;
+            font-size: 0.9em;
+            font-style: italic;
         }
 
         .milestone-icon {
@@ -713,23 +753,68 @@
                 const div = document.createElement('div');
                 div.className = 'milestone';
 
+                let statusText = '';
+                let statusClass = '';
+                let remainingText = '';
+
                 if (currentMinutes >= milestone.minutes) {
                     div.classList.add('achieved');
+                    statusText = '達成済み ✓';
+                    statusClass = 'milestone-status';
                 } else if (!nextMilestoneFound) {
                     div.classList.add('next');
+                    statusText = '次の目標 →';
+                    statusClass = 'milestone-status';
                     nextMilestoneFound = true;
+
+                    // 残り時間を計算
+                    const remainingMinutes = milestone.minutes - currentMinutes;
+                    remainingText = `<div class="milestone-remaining">あと ${formatRemainingTime(remainingMinutes)}</div>`;
+                } else {
+                    div.classList.add('upcoming');
+                    statusText = '未達成';
+                    statusClass = 'milestone-status';
+
+                    // 残り時間を計算
+                    const remainingMinutes = milestone.minutes - currentMinutes;
+                    remainingText = `<div class="milestone-remaining">あと ${formatRemainingTime(remainingMinutes)}</div>`;
                 }
 
                 const timeText = formatMilestoneTime(milestone.minutes);
 
                 div.innerHTML = `
                     <span class="milestone-icon">${milestone.icon}</span>
+                    <div class="${statusClass}">${statusText}</div>
                     <div class="milestone-time">${timeText}</div>
                     <div class="milestone-benefit">${milestone.text}</div>
+                    ${remainingText}
                 `;
 
                 milestonesContainer.appendChild(div);
             });
+        }
+
+        // 残り時間のフォーマット
+        function formatRemainingTime(minutes) {
+            if (minutes < 60) {
+                return `${minutes}分`;
+            } else if (minutes < 1440) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return mins > 0 ? `${hours}時間${mins}分` : `${hours}時間`;
+            } else if (minutes < 43200) {
+                const days = Math.floor(minutes / 1440);
+                const hours = Math.floor((minutes % 1440) / 60);
+                return hours > 0 ? `${days}日${hours}時間` : `${days}日`;
+            } else if (minutes < 525600) {
+                const months = Math.floor(minutes / 43200);
+                const days = Math.floor((minutes % 43200) / 1440);
+                return days > 0 ? `${months}ヶ月${days}日` : `${months}ヶ月`;
+            } else {
+                const years = Math.floor(minutes / 525600);
+                const months = Math.floor((minutes % 525600) / 43200);
+                return months > 0 ? `${years}年${months}ヶ月` : `${years}年`;
+            }
         }
 
         // マイルストーン時間のフォーマット
