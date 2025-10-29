@@ -937,6 +937,152 @@
             transform: translateY(-2px);
             box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
         }
+
+        /* 緊急SOSボタン */
+        .sos-button {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: none;
+            font-size: 2.5em;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(220, 53, 69, 0.6);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse-sos 2s infinite;
+        }
+
+        @keyframes pulse-sos {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sos-button:hover {
+            transform: scale(1.15);
+            box-shadow: 0 8px 30px rgba(220, 53, 69, 0.8);
+        }
+
+        .sos-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(220, 53, 69, 0.95);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .sos-overlay.active {
+            display: flex;
+        }
+
+        .sos-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .sos-title {
+            font-size: 2.5em;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .sos-message {
+            font-size: 1.3em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .sos-stats {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sos-stats-item {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .sos-countdown {
+            font-size: 4em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        .sos-actions {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sos-action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sos-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .sos-overcome-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            font-size: 1.2em;
+            padding: 18px 40px;
+        }
+
+        @media (max-width: 768px) {
+            .sos-button {
+                bottom: 80px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+            }
+
+            .sos-content {
+                padding: 25px;
+            }
+
+            .sos-title {
+                font-size: 2em;
+            }
+
+            .sos-message {
+                font-size: 1.1em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1139,6 +1285,25 @@
     <!-- 渇望記録FABボタン -->
     <button class="fab-button hidden" id="cravingFab" title="吸いたくなった">🚬</button>
 
+    <!-- 緊急SOSボタン -->
+    <button class="sos-button hidden" id="sosButton" title="緊急SOS">🆘</button>
+
+    <!-- 緊急SOSオーバーレイ -->
+    <div class="sos-overlay" id="sosOverlay">
+        <div class="sos-content">
+            <div class="sos-title">🚨 ちょっと待って！</div>
+            <div class="sos-message" id="sosMessage"></div>
+            <div class="sos-stats" id="sosStats"></div>
+            <div class="sos-countdown" id="sosCountdown">5:00</div>
+            <div class="sos-actions">
+                <button class="sos-action-btn" onclick="alert('深呼吸：4秒吸って、7秒止めて、8秒吐く')">🫁 深呼吸する</button>
+                <button class="sos-action-btn" onclick="alert('水を飲みましょう！')">💧 水を飲む</button>
+                <button class="sos-action-btn" onclick="alert('短い散歩に行きましょう')">🚶 散歩する</button>
+            </div>
+            <button class="sos-action-btn sos-overcome-btn" id="sosOvercomeBtn">✓ 乗り越えた！</button>
+        </div>
+    </div>
+
     <!-- 渇望記録モーダル -->
     <div class="modal-overlay" id="cravingModal">
         <div class="modal-content">
@@ -1204,6 +1369,8 @@
         let cravings = [];
         let copingStrategies = [];
         let currentStrategyFilter = 'all';
+        let sosHistory = [];
+        let sosCountdownInterval = null;
 
         // 健康マイルストーン（医学的根拠に基づく）
         const healthMilestones = [
@@ -1460,6 +1627,10 @@
                     displayCopingStrategies();
                 });
             });
+
+            // SOS関連
+            document.getElementById('sosButton').addEventListener('click', openSOS);
+            document.getElementById('sosOvercomeBtn').addEventListener('click', closeSOS);
         }
 
         // セットアップフォームの処理
@@ -1502,6 +1673,7 @@
             localStorage.setItem('calendarData', JSON.stringify(calendarData));
             localStorage.setItem('cravings', JSON.stringify(cravings));
             localStorage.setItem('copingStrategies', JSON.stringify(copingStrategies));
+            localStorage.setItem('sosHistory', JSON.stringify(sosHistory));
         }
 
         // データの読み込み
@@ -1525,6 +1697,12 @@
             } else {
                 copingStrategies = [...defaultCopingStrategies];
                 saveData();
+            }
+
+            // SOS履歴の読み込み
+            const savedSosHistory = localStorage.getItem('sosHistory');
+            if (savedSosHistory) {
+                sosHistory = JSON.parse(savedSosHistory);
             }
 
             // まずURLクエリパラメータをチェック
@@ -1563,6 +1741,7 @@
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('dashboard').style.display = 'block';
             document.getElementById('cravingFab').classList.remove('hidden');
+            document.getElementById('sosButton').classList.remove('hidden');
         }
 
         // 定期更新の開始
@@ -1948,6 +2127,76 @@
                 displayCopingStrategies();
                 alert(`「${strategy.name}」を実行します。${strategy.duration}かかります。\n\n${strategy.description}`);
             }
+        }
+
+        // SOS画面を開く
+        function openSOS() {
+            const now = new Date();
+            const quitDate = new Date(quitData.quitDate);
+            const diffMs = now - quitDate;
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const days = Math.floor(diffMinutes / 1440);
+
+            const cigarettesAvoided = Math.floor((diffMinutes / 1440) * quitData.cigarettesPerDay);
+            const moneySaved = Math.floor(cigarettesAvoided * quitData.pricePerCigarette);
+
+            // メッセージの設定
+            document.getElementById('sosMessage').innerHTML = `
+                あなたはここまで<strong>${days}日間</strong>頑張ってきました！<br>
+                <strong>¥${moneySaved.toLocaleString()}</strong>も節約しています！<br>
+                <strong>${cigarettesAvoided}本</strong>のタバコを避けました！<br><br>
+                あと5分だけ待ちましょう。<br>
+                この感覚は必ず消えます。
+            `;
+
+            // 統計の設定
+            document.getElementById('sosStats').innerHTML = `
+                <div class="sos-stats-item">🏆 ${days}日間の継続</div>
+                <div class="sos-stats-item">💰 ¥${moneySaved.toLocaleString()} 節約</div>
+                <div class="sos-stats-item">🚬 ${cigarettesAvoided}本 回避</div>
+            `;
+
+            // オーバーレイを表示
+            document.getElementById('sosOverlay').classList.add('active');
+
+            // カウントダウン開始（5分）
+            let remainingSeconds = 300;
+            const countdownEl = document.getElementById('sosCountdown');
+
+            if (sosCountdownInterval) {
+                clearInterval(sosCountdownInterval);
+            }
+
+            sosCountdownInterval = setInterval(() => {
+                const minutes = Math.floor(remainingSeconds / 60);
+                const seconds = remainingSeconds % 60;
+                countdownEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                remainingSeconds--;
+
+                if (remainingSeconds < 0) {
+                    clearInterval(sosCountdownInterval);
+                    countdownEl.textContent = '時間です！';
+                }
+            }, 1000);
+        }
+
+        // SOS画面を閉じる
+        function closeSOS() {
+            if (sosCountdownInterval) {
+                clearInterval(sosCountdownInterval);
+            }
+
+            // 成功を記録
+            sosHistory.push({
+                timestamp: new Date().toISOString(),
+                success: true
+            });
+
+            saveData();
+
+            document.getElementById('sosOverlay').classList.remove('active');
+
+            alert('素晴らしい！あなたは渇望を乗り越えました！この勝利を誇りに思ってください！');
         }
 
         // マイルストーンの更新
