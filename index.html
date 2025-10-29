@@ -537,6 +537,268 @@
                 gap: 2px;
             }
         }
+
+        /* 渇望記録システム */
+        .fab-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(245, 87, 108, 0.5);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(245, 87, 108, 0.7);
+        }
+
+        .fab-button:active {
+            transform: scale(0.95);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .intensity-slider-container {
+            margin: 20px 0;
+        }
+
+        .intensity-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #84fab0 0%, #ffc107 50%, #dc3545 100%);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .intensity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .intensity-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .intensity-value {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .radio-option label:hover {
+            border-color: #667eea;
+        }
+
+        .cravings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .cravings-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .craving-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #f5576c;
+        }
+
+        .craving-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .craving-time {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .craving-intensity {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .craving-details {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .craving-details strong {
+            color: #333;
+        }
+
+        .craving-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .craving-stat-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .craving-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .craving-stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .fab-button {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .radio-option {
+                min-width: 80px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -698,8 +960,88 @@
                 <div class="badges-grid" id="badges"></div>
             </div>
 
+            <!-- 渇望記録一覧 -->
+            <div class="cravings-card">
+                <h2>渇望記録</h2>
+                <div class="craving-stats" id="cravingStats">
+                    <div class="craving-stat-box">
+                        <div class="craving-stat-value" id="totalCravings">0</div>
+                        <div class="craving-stat-label">総渇望回数</div>
+                    </div>
+                    <div class="craving-stat-box">
+                        <div class="craving-stat-value" id="avgIntensity">0</div>
+                        <div class="craving-stat-label">平均強度</div>
+                    </div>
+                    <div class="craving-stat-box">
+                        <div class="craving-stat-value" id="todayCravings">0</div>
+                        <div class="craving-stat-label">今日の渇望</div>
+                    </div>
+                </div>
+                <div id="cravingsList"></div>
+            </div>
+
             <button class="btn" id="shareBtn">🔗 進捗を共有するURLをコピー</button>
             <button class="btn btn-secondary" id="resetBtn">データをリセット</button>
+        </div>
+    </div>
+
+    <!-- 渇望記録FABボタン -->
+    <button class="fab-button hidden" id="cravingFab" title="吸いたくなった">🚬</button>
+
+    <!-- 渇望記録モーダル -->
+    <div class="modal-overlay" id="cravingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>渇望を記録</h2>
+                <button class="modal-close" id="closeCravingModal">×</button>
+            </div>
+            <form id="cravingForm">
+                <div class="form-group">
+                    <label>渇望の強さ（1-10）</label>
+                    <div class="intensity-slider-container">
+                        <input type="range" class="intensity-slider" id="intensitySlider" min="1" max="10" value="5">
+                        <div class="intensity-value" id="intensityValue">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>状況</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="sit1" name="situation" value="仕事中" checked>
+                            <label for="sit1">仕事中</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit2" name="situation" value="食後">
+                            <label for="sit2">食後</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit3" name="situation" value="飲酒時">
+                            <label for="sit3">飲酒時</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit4" name="situation" value="ストレス">
+                            <label for="sit4">ストレス</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="sit5" name="situation" value="その他">
+                            <label for="sit5">その他</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cravingTrigger">トリガー</label>
+                    <input type="text" id="cravingTrigger" placeholder="何がきっかけですか？">
+                </div>
+
+                <div class="form-group">
+                    <label for="cravingNotes">メモ（任意）</label>
+                    <input type="text" id="cravingNotes" placeholder="気持ちや状況を記録...">
+                </div>
+
+                <button type="submit" class="btn">記録する</button>
+            </form>
         </div>
     </div>
 
@@ -708,6 +1050,7 @@
         let quitData = null;
         let updateInterval = null;
         let calendarData = {};
+        let cravings = [];
 
         // 健康マイルストーン（医学的根拠に基づく）
         const healthMilestones = [
@@ -827,6 +1170,19 @@
             document.getElementById('setupForm').addEventListener('submit', handleSetup);
             document.getElementById('resetBtn').addEventListener('click', handleReset);
             document.getElementById('shareBtn').addEventListener('click', copyShareURL);
+
+            // 渇望記録関連
+            document.getElementById('cravingFab').addEventListener('click', openCravingModal);
+            document.getElementById('closeCravingModal').addEventListener('click', closeCravingModal);
+            document.getElementById('cravingModal').addEventListener('click', function(e) {
+                if (e.target.id === 'cravingModal') {
+                    closeCravingModal();
+                }
+            });
+            document.getElementById('cravingForm').addEventListener('submit', handleCravingSubmit);
+            document.getElementById('intensitySlider').addEventListener('input', function(e) {
+                document.getElementById('intensityValue').textContent = e.target.value;
+            });
         }
 
         // セットアップフォームの処理
@@ -867,6 +1223,7 @@
         function saveData() {
             localStorage.setItem('quitData', JSON.stringify(quitData));
             localStorage.setItem('calendarData', JSON.stringify(calendarData));
+            localStorage.setItem('cravings', JSON.stringify(cravings));
         }
 
         // データの読み込み
@@ -875,6 +1232,12 @@
             const savedCalendar = localStorage.getItem('calendarData');
             if (savedCalendar) {
                 calendarData = JSON.parse(savedCalendar);
+            }
+
+            // 渇望記録の読み込み
+            const savedCravings = localStorage.getItem('cravings');
+            if (savedCravings) {
+                cravings = JSON.parse(savedCravings);
             }
 
             // まずURLクエリパラメータをチェック
@@ -912,6 +1275,7 @@
             document.getElementById('setup').style.display = 'none';
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('cravingFab').classList.remove('hidden');
         }
 
         // 定期更新の開始
@@ -975,6 +1339,9 @@
 
             // カレンダーヒートマップの更新
             updateCalendarHeatmap();
+
+            // 渇望記録の更新
+            updateCravingsDisplay();
         }
 
         // カレンダーヒートマップの生成と更新
@@ -1110,6 +1477,113 @@
                 };
                 saveData();
             }
+        }
+
+        // 渇望記録モーダルを開く
+        function openCravingModal() {
+            document.getElementById('cravingModal').classList.add('active');
+            document.getElementById('intensitySlider').value = 5;
+            document.getElementById('intensityValue').textContent = 5;
+        }
+
+        // 渇望記録モーダルを閉じる
+        function closeCravingModal() {
+            document.getElementById('cravingModal').classList.remove('active');
+            document.getElementById('cravingForm').reset();
+        }
+
+        // 渇望記録フォームの送信処理
+        function handleCravingSubmit(e) {
+            e.preventDefault();
+
+            const intensity = parseInt(document.getElementById('intensitySlider').value);
+            const situation = document.querySelector('input[name="situation"]:checked').value;
+            const trigger = document.getElementById('cravingTrigger').value;
+            const notes = document.getElementById('cravingNotes').value;
+
+            const craving = {
+                id: new Date().getTime().toString(),
+                timestamp: new Date().toISOString(),
+                intensity: intensity,
+                situation: situation,
+                trigger: trigger,
+                copingMethod: '',
+                notes: notes,
+                resolved: false
+            };
+
+            cravings.unshift(craving);
+
+            // 今日のカレンダーデータを更新
+            const today = formatDateStr(new Date());
+            if (calendarData[today]) {
+                calendarData[today].cravingCount++;
+            }
+
+            saveData();
+            closeCravingModal();
+            updateCravingsDisplay();
+            updateCalendarHeatmap();
+
+            // 渇望記録後のメッセージ表示（オプション）
+            alert('渇望を記録しました。深呼吸をして、水を飲みましょう。この感覚は必ず消えます。');
+        }
+
+        // 渇望記録の表示更新
+        function updateCravingsDisplay() {
+            // 統計情報の更新
+            const totalCravings = cravings.length;
+            const avgIntensity = totalCravings > 0
+                ? (cravings.reduce((sum, c) => sum + c.intensity, 0) / totalCravings).toFixed(1)
+                : 0;
+
+            const today = formatDateStr(new Date());
+            const todayCravings = cravings.filter(c => {
+                const cravingDate = formatDateStr(new Date(c.timestamp));
+                return cravingDate === today;
+            }).length;
+
+            document.getElementById('totalCravings').textContent = totalCravings;
+            document.getElementById('avgIntensity').textContent = avgIntensity;
+            document.getElementById('todayCravings').textContent = todayCravings;
+
+            // 渇望記録一覧の更新
+            const listContainer = document.getElementById('cravingsList');
+            listContainer.innerHTML = '';
+
+            if (cravings.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">まだ渇望記録がありません</p>';
+                return;
+            }
+
+            // 最新10件を表示
+            const recentCravings = cravings.slice(0, 10);
+            recentCravings.forEach(craving => {
+                const div = document.createElement('div');
+                div.className = 'craving-item';
+
+                const date = new Date(craving.timestamp);
+                const timeStr = date.toLocaleString('ja-JP', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                div.innerHTML = `
+                    <div class="craving-header">
+                        <div class="craving-time">${timeStr}</div>
+                        <div class="craving-intensity">強度: ${craving.intensity}/10</div>
+                    </div>
+                    <div class="craving-details">
+                        <strong>状況:</strong> ${craving.situation}<br>
+                        ${craving.trigger ? `<strong>トリガー:</strong> ${craving.trigger}<br>` : ''}
+                        ${craving.notes ? `<strong>メモ:</strong> ${craving.notes}` : ''}
+                    </div>
+                `;
+
+                listContainer.appendChild(div);
+            });
         }
 
         // マイルストーンの更新
