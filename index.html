@@ -1152,6 +1152,74 @@
             background: white;
             color: #667eea;
         }
+
+        /* 購入シミュレーター */
+        .purchase-simulator-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .purchase-simulator-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .purchase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .purchase-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+        }
+
+        .purchase-item.affordable {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+
+        .purchase-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .purchase-emoji {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .purchase-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .purchase-price {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .purchase-status {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .purchase-status.achieved {
+            color: #28a745;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -1261,6 +1329,12 @@
                     <div class="stat-value" id="healthScore">0%</div>
                     <div class="stat-label">健康回復度</div>
                 </div>
+            </div>
+
+            <!-- 購入シミュレーター -->
+            <div class="purchase-simulator-card">
+                <h2>節約金額で買えるもの</h2>
+                <div class="purchase-grid" id="purchaseGrid"></div>
             </div>
 
             <!-- なぜ禁煙？リマインダー -->
@@ -1593,6 +1667,21 @@
             }
         ];
 
+        // 購入シミュレーター商品リスト
+        const purchaseSimulations = [
+            { name: "美味しいランチ", price: 1000, emoji: "🍱" },
+            { name: "新刊本", price: 1500, emoji: "📚" },
+            { name: "映画鑑賞", price: 2000, emoji: "🎬" },
+            { name: "おしゃれなカフェ", price: 3000, emoji: "☕" },
+            { name: "良いヘッドホン", price: 15000, emoji: "🎧" },
+            { name: "週末温泉旅行", price: 30000, emoji: "♨️" },
+            { name: "最新ゲーム機", price: 50000, emoji: "🎮" },
+            { name: "高級レストラン", price: 20000, emoji: "🍽️" },
+            { name: "ブランド財布", price: 40000, emoji: "👛" },
+            { name: "国内旅行", price: 100000, emoji: "🗾" },
+            { name: "海外旅行", price: 200000, emoji: "✈️" }
+        ];
+
         // デフォルトの禁煙理由
         const defaultReasons = [
             { id: 'health', emoji: '❤️', text: '健康のために', category: '健康' },
@@ -1907,6 +1996,9 @@
 
             // 渇望記録の更新
             updateCravingsDisplay();
+
+            // 購入シミュレーターの更新
+            updatePurchaseSimulator(moneySaved);
         }
 
         // カレンダーヒートマップの生成と更新
@@ -2339,6 +2431,40 @@
 
             saveData();
             displayReasons();
+        }
+
+        // 購入シミュレーターの更新
+        function updatePurchaseSimulator(moneySaved) {
+            const container = document.getElementById('purchaseGrid');
+            container.innerHTML = '';
+
+            purchaseSimulations.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'purchase-item';
+
+                const canAfford = moneySaved >= item.price;
+                if (canAfford) {
+                    div.classList.add('affordable');
+                }
+
+                let statusText = '';
+                if (canAfford) {
+                    const count = Math.floor(moneySaved / item.price);
+                    statusText = `<div class="purchase-status achieved">✓ ${count}個買える！</div>`;
+                } else {
+                    const remaining = item.price - moneySaved;
+                    statusText = `<div class="purchase-status">あと¥${remaining.toLocaleString()}</div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="purchase-emoji">${item.emoji}</div>
+                    <div class="purchase-name">${item.name}</div>
+                    <div class="purchase-price">¥${item.price.toLocaleString()}</div>
+                    ${statusText}
+                `;
+
+                container.appendChild(div);
+            });
         }
 
         // マイルストーンの更新
