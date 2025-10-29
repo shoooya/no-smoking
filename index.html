@@ -107,6 +107,15 @@
             margin-top: 10px;
         }
 
+        #shareBtn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            margin-bottom: 10px;
+        }
+
+        #shareBtn:hover {
+            box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+        }
+
         .dashboard {
             display: none;
         }
@@ -547,6 +556,7 @@
                 <div class="badges-grid" id="badges"></div>
             </div>
 
+            <button class="btn" id="shareBtn">🔗 進捗を共有するURLをコピー</button>
             <button class="btn btn-secondary" id="resetBtn">データをリセット</button>
         </div>
     </div>
@@ -611,10 +621,69 @@
             document.getElementById('quitDate').value = now.toISOString().slice(0, 16);
         });
 
+        // URLクエリパラメータから禁煙データを読み取る
+        function loadDataFromURL() {
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.has('quitDate') && params.has('cigarettesPerDay') &&
+                params.has('pricePerPack') && params.has('cigarettesPerPack')) {
+
+                const cigarettesPerDay = parseInt(params.get('cigarettesPerDay'));
+                const pricePerPack = parseInt(params.get('pricePerPack'));
+                const cigarettesPerPack = parseInt(params.get('cigarettesPerPack'));
+
+                return {
+                    quitDate: params.get('quitDate'),
+                    cigarettesPerDay,
+                    pricePerPack,
+                    cigarettesPerPack,
+                    pricePerCigarette: pricePerPack / cigarettesPerPack
+                };
+            }
+
+            return null;
+        }
+
+        // 共有用URLを生成
+        function generateShareURL() {
+            if (!quitData) return null;
+
+            const baseURL = window.location.origin + window.location.pathname;
+            const params = new URLSearchParams({
+                quitDate: quitData.quitDate,
+                cigarettesPerDay: quitData.cigarettesPerDay,
+                pricePerPack: quitData.pricePerPack,
+                cigarettesPerPack: quitData.cigarettesPerPack
+            });
+
+            return `${baseURL}?${params.toString()}`;
+        }
+
+        // 共有URLをコピー
+        function copyShareURL() {
+            const shareURL = generateShareURL();
+            if (!shareURL) return;
+
+            navigator.clipboard.writeText(shareURL).then(() => {
+                const btn = document.getElementById('shareBtn');
+                const originalText = btn.textContent;
+                btn.textContent = '✓ URLをコピーしました！';
+                btn.style.background = 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                alert('URLのコピーに失敗しました: ' + err);
+            });
+        }
+
         // イベントリスナーの設定
         function setupEventListeners() {
             document.getElementById('setupForm').addEventListener('submit', handleSetup);
             document.getElementById('resetBtn').addEventListener('click', handleReset);
+            document.getElementById('shareBtn').addEventListener('click', copyShareURL);
         }
 
         // セットアップフォームの処理
@@ -658,6 +727,18 @@
 
         // データの読み込み
         function loadData() {
+            // まずURLクエリパラメータをチェック
+            const urlData = loadDataFromURL();
+            if (urlData) {
+                quitData = urlData;
+                // URLから読み込んだデータもローカルストレージに保存
+                saveData();
+                showDashboard();
+                startUpdating();
+                return;
+            }
+
+            // URLにデータがない場合、ローカルストレージをチェック
             const saved = localStorage.getItem('quitData');
             if (saved) {
                 quitData = JSON.parse(saved);
