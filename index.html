@@ -2273,14 +2273,14 @@
             document.getElementById('lifeRegained').textContent = lifeRegained.toLocaleString();
             document.getElementById('healthScore').textContent = `${healthScore}%`;
 
-            // マイルストーンの更新
-            updateMilestones(diffMinutes);
+            // マイルストーンの更新（最後に吸ってからの時間で判定）
+            updateMilestones(slipDiffMinutes);
 
-            // バッジの更新
-            updateBadges(diffMinutes, moneySaved);
+            // バッジの更新（最後に吸ってからの時間で判定）
+            updateBadges(slipDiffMinutes, moneySaved);
 
-            // 進捗バーの更新
-            updateProgress(diffMinutes);
+            // 進捗バーの更新（最後に吸ってからの時間で判定）
+            updateProgress(slipDiffMinutes);
 
             // モチベーションメッセージの更新（1日ごとに変更）
             const messageIndex = days % motivationMessages.length;
