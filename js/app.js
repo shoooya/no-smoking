@@ -46,6 +46,40 @@ function setupEventListeners() {
 
     // 禁煙理由
     document.getElementById('addReasonBtn').addEventListener('click', addReason);
+
+    // トグルボタン
+    setupToggleButtons();
+}
+
+// トグル機能の設定
+function setupToggleButtons() {
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.dataset.target;
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                targetElement.classList.toggle('hidden');
+                this.classList.toggle('collapsed');
+
+                // トグルの状態をローカルストレージに保存
+                const isHidden = targetElement.classList.contains('hidden');
+                localStorage.setItem(`toggle_${targetId}`, isHidden);
+            }
+        });
+    });
+
+    // ローカルストレージからトグル状態を復元
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        const targetId = btn.dataset.target;
+        const targetElement = document.getElementById(targetId);
+        const savedState = localStorage.getItem(`toggle_${targetId}`);
+
+        if (savedState === 'true' && targetElement) {
+            targetElement.classList.add('hidden');
+            btn.classList.add('collapsed');
+        }
+    });
 }
 
 // ページ読み込み時の処理

@@ -126,12 +126,6 @@
                 </div>
             </div>
 
-            <!-- 購入シミュレーター -->
-            <div class="purchase-simulator-card">
-                <h2>節約金額で買えるもの</h2>
-                <div class="purchase-grid" id="purchaseGrid"></div>
-            </div>
-
             <!-- なぜ禁煙？リマインダー -->
             <div class="why-quit-card">
                 <h2>💪 なぜ禁煙？</h2>
@@ -147,8 +141,11 @@
 
             <!-- 健康マイルストーン -->
             <div class="milestones-card">
-                <h2>健康マイルストーン</h2>
-                <div id="milestones"></div>
+                <div class="card-header-with-toggle">
+                    <h2>健康マイルストーン</h2>
+                    <button class="toggle-btn" data-target="milestones">▼</button>
+                </div>
+                <div id="milestones" class="toggleable-content"></div>
             </div>
 
             <!-- 進捗状況 -->
@@ -204,7 +201,11 @@
 
             <!-- 渇望記録一覧 -->
             <div class="cravings-card">
-                <h2>渇望記録</h2>
+                <div class="card-header-with-toggle">
+                    <h2>渇望記録</h2>
+                    <button class="toggle-btn" data-target="cravingContent">▼</button>
+                </div>
+                <div id="cravingContent" class="toggleable-content">
                 <div class="craving-stats" id="cravingStats">
                     <div class="craving-stat-box">
                         <div class="craving-stat-value" id="totalCravings">0</div>
@@ -220,11 +221,16 @@
                     </div>
                 </div>
                 <div id="cravingsList"></div>
+                </div>
             </div>
 
             <!-- 吸っちゃった記録一覧 -->
             <div class="slips-card">
-                <h2>吸っちゃった記録</h2>
+                <div class="card-header-with-toggle">
+                    <h2>吸っちゃった記録</h2>
+                    <button class="toggle-btn" data-target="slipContent">▼</button>
+                </div>
+                <div id="slipContent" class="toggleable-content">
                 <div class="slip-stats" id="slipStats">
                     <div class="slip-stat-box">
                         <div class="slip-stat-value" id="totalSlips">0</div>
@@ -236,6 +242,7 @@
                     </div>
                 </div>
                 <div id="slipsList"></div>
+                </div>
             </div>
 
             <button class="btn" id="shareBtn">🔗 進捗を共有するURLをコピー</button>

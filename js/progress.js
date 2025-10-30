@@ -1,37 +1,3 @@
-// 購入シミュレーターの更新
-function updatePurchaseSimulator(moneySaved) {
-    const container = document.getElementById('purchaseGrid');
-    container.innerHTML = '';
-
-    purchaseSimulations.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'purchase-item';
-
-        const canAfford = moneySaved >= item.price;
-        if (canAfford) {
-            div.classList.add('affordable');
-        }
-
-        let statusText = '';
-        if (canAfford) {
-            const count = Math.floor(moneySaved / item.price);
-            statusText = `<div class="purchase-status achieved">✓ ${count}個買える！</div>`;
-        } else {
-            const remaining = item.price - moneySaved;
-            statusText = `<div class="purchase-status">あと¥${remaining.toLocaleString()}</div>`;
-        }
-
-        div.innerHTML = `
-            <div class="purchase-emoji">${item.emoji}</div>
-            <div class="purchase-name">${item.name}</div>
-            <div class="purchase-price">¥${item.price.toLocaleString()}</div>
-            ${statusText}
-        `;
-
-        container.appendChild(div);
-    });
-}
-
 // マイルストーンの更新
 function updateMilestones(currentMinutes) {
     const milestonesContainer = document.getElementById('milestones');

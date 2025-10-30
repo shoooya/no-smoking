@@ -1300,70 +1300,42 @@
             color: #667eea;
         }
 
-        /* 購入シミュレーター */
-        .purchase-simulator-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        /* トグルボタンスタイル */
+        .card-header-with-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        .purchase-simulator-card h2 {
+        .card-header-with-toggle h2 {
+            margin: 0;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
             color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.8em;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: transform 0.3s ease;
         }
 
-        .purchase-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        .toggle-btn:hover {
+            color: #764ba2;
         }
 
-        .purchase-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s;
-            border: 3px solid transparent;
+        .toggle-btn.collapsed {
+            transform: rotate(-90deg);
         }
 
-        .purchase-item.affordable {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        .toggleable-content {
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        .purchase-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        .toggleable-content.hidden {
+            display: none;
         }
 
-        .purchase-emoji {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .purchase-name {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .purchase-price {
-            color: #667eea;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
-
-        .purchase-status {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .purchase-status.achieved {
-            color: #28a745;
-            font-weight: bold;
-        }

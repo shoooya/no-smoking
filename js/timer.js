@@ -89,7 +89,4 @@ function updateDashboard() {
 
     // 吸っちゃった記録の更新
     updateSlipsDisplay();
-
-    // 購入シミュレーターの更新
-    updatePurchaseSimulator(moneySaved);
 }
