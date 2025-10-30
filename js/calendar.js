@@ -4,12 +4,17 @@ function updateCalendarHeatmap() {
     container.innerHTML = '';
 
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const quitDate = new Date(quitData.quitDate);
+    quitDate.setHours(0, 0, 0, 0);
 
-    // 52週間分のカレンダーを生成
-    const weeks = 52;
-    const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() - (weeks * 7));
+    // 禁煙開始日から今日までの日数を計算
+    const daysSinceQuit = Math.floor((today - quitDate) / (1000 * 60 * 60 * 24));
+    const totalDays = Math.max(daysSinceQuit + 1, 7); // 最低1週間は表示
+    const weeks = Math.ceil(totalDays / 7);
+
+    // 禁煙開始日を起点に設定
+    const startDate = new Date(quitDate);
 
     for (let week = 0; week < weeks; week++) {
         const weekDiv = document.createElement('div');
