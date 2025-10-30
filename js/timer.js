@@ -54,13 +54,13 @@ function updateDashboard() {
     document.getElementById('slipMinutes').textContent = slipMinutes;
     document.getElementById('slipSeconds').textContent = slipSeconds;
 
-    // 統計の計算
-    const cigarettesAvoided = Math.floor((diffMinutes / 1440) * quitData.cigarettesPerDay);
+    // 統計の計算（最後に吸った時間からの経過で計算）
+    const cigarettesAvoided = Math.floor((slipDiffMinutes / 1440) * quitData.cigarettesPerDay);
     const moneySaved = Math.floor(cigarettesAvoided * quitData.pricePerCigarette);
     const lifeRegained = cigarettesAvoided * 11; // 1本あたり11分寿命が縮むとされる
 
-    // 健康スコアの計算（15年で100%）
-    const healthScore = Math.min(100, Math.floor((diffMinutes / 7884000) * 100));
+    // 健康スコアの計算（15年で100%、最後に吸った時間からの経過で計算）
+    const healthScore = Math.min(100, Math.floor((slipDiffMinutes / 7884000) * 100));
 
     // 統計の表示
     document.getElementById('moneySaved').textContent = `¥${moneySaved.toLocaleString()}`;
