@@ -78,7 +78,7 @@ function updateDashboard() {
     updateProgress(slipDiffMinutes);
 
     // モチベーションメッセージの更新（1日ごとに変更）
-    const messageIndex = days % motivationMessages.length;
+    const messageIndex = slipDays % motivationMessages.length;
     document.getElementById('motivationText').textContent = motivationMessages[messageIndex];
 
     // カレンダーヒートマップの更新
