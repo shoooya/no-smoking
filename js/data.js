@@ -142,21 +142,6 @@ const defaultCopingStrategies = [
     }
 ];
 
-// 購入シミュレーター商品リスト
-const purchaseSimulations = [
-    { name: "美味しいランチ", price: 1000, emoji: "🍱" },
-    { name: "新刊本", price: 1500, emoji: "📚" },
-    { name: "映画鑑賞", price: 2000, emoji: "🎬" },
-    { name: "おしゃれなカフェ", price: 3000, emoji: "☕" },
-    { name: "良いヘッドホン", price: 15000, emoji: "🎧" },
-    { name: "週末温泉旅行", price: 30000, emoji: "♨️" },
-    { name: "最新ゲーム機", price: 50000, emoji: "🎮" },
-    { name: "高級レストラン", price: 20000, emoji: "🍽️" },
-    { name: "ブランド財布", price: 40000, emoji: "👛" },
-    { name: "国内旅行", price: 100000, emoji: "🗾" },
-    { name: "海外旅行", price: 200000, emoji: "✈️" }
-];
-
 // デフォルトの禁煙理由
 const defaultReasons = [
     { id: 'health', emoji: '❤️', text: '健康のために', category: '健康' },
