@@ -148,57 +148,6 @@
                 <div id="milestones" class="toggleable-content"></div>
             </div>
 
-            <!-- 進捗状況 -->
-            <div class="progress-card">
-                <h2>目標までの進捗</h2>
-                <div class="progress-item">
-                    <div class="progress-label">
-                        <span>1週間達成</span>
-                        <span id="week1Progress">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="week1Bar" style="width: 0%"></div>
-                    </div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-label">
-                        <span>1ヶ月達成</span>
-                        <span id="month1Progress">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="month1Bar" style="width: 0%"></div>
-                    </div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-label">
-                        <span>1年達成</span>
-                        <span id="year1Progress">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="year1Bar" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 達成バッジ -->
-            <div class="achievements-card">
-                <h2>達成バッジ</h2>
-                <div class="badges-grid" id="badges"></div>
-            </div>
-
-            <!-- 対処法データベース -->
-            <div class="coping-strategies-card">
-                <h2>対処法データベース</h2>
-                <div class="strategy-categories">
-                    <button class="category-filter active" data-category="all">すべて</button>
-                    <button class="category-filter" data-category="即効性">即効性（1-5分）</button>
-                    <button class="category-filter" data-category="中期対策">中期対策（10-30分）</button>
-                    <button class="category-filter" data-category="長期戦略">長期戦略</button>
-                    <button class="category-filter" data-category="favorite">お気に入り</button>
-                </div>
-                <div class="strategy-grid" id="strategyGrid"></div>
-            </div>
-
             <!-- 渇望記録一覧 -->
             <div class="cravings-card">
                 <div class="card-header-with-toggle">
@@ -242,6 +191,65 @@
                     </div>
                 </div>
                 <div id="slipsList"></div>
+                </div>
+            </div>
+
+            <!-- 進捗状況 -->
+            <div class="progress-card">
+                <h2>目標までの進捗</h2>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>1週間達成</span>
+                        <span id="week1Progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="week1Bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>1ヶ月達成</span>
+                        <span id="month1Progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="month1Bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>1年達成</span>
+                        <span id="year1Progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="year1Bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 達成バッジ -->
+            <div class="achievements-card">
+                <div class="card-header-with-toggle">
+                    <h2>達成バッジ</h2>
+                    <button class="toggle-btn" data-target="badges">▼</button>
+                </div>
+                <div class="badges-grid toggleable-content" id="badges"></div>
+            </div>
+
+            <!-- 対処法データベース -->
+            <div class="coping-strategies-card">
+                <div class="card-header-with-toggle">
+                    <h2>対処法データベース</h2>
+                    <button class="toggle-btn" data-target="strategyContent">▼</button>
+                </div>
+                <div id="strategyContent" class="toggleable-content">
+                <div class="strategy-categories">
+                    <button class="category-filter active" data-category="all">すべて</button>
+                    <button class="category-filter" data-category="即効性">即効性（1-5分）</button>
+                    <button class="category-filter" data-category="中期対策">中期対策（10-30分）</button>
+                    <button class="category-filter" data-category="長期戦略">長期戦略</button>
+                    <button class="category-filter" data-category="favorite">お気に入り</button>
+                </div>
+                <div class="strategy-grid" id="strategyGrid"></div>
                 </div>
             </div>
 
