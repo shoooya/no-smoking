@@ -425,6 +425,31 @@
             margin-top: 5px;
         }
 
+        /* 小さめの開始からの経過時間表示 */
+        .timer-secondary {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-secondary-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .timer-secondary-segments {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .timer-secondary-segments span {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
         /* 禁煙継続カレンダー（GitHub風ヒートマップ） */
         .calendar-card {
             background: white;
@@ -1386,23 +1411,34 @@
         <div id="dashboard" class="dashboard">
             <!-- タイマー表示 -->
             <div class="timer-display">
-                <h2>禁煙継続時間</h2>
+                <h2>最後に吸ってからの経過時間</h2>
                 <div class="timer-segments">
                     <div class="timer-segment">
-                        <span class="timer-segment-value" id="days">0</span>
+                        <span class="timer-segment-value" id="slipDays">0</span>
                         <span class="timer-segment-label">日</span>
                     </div>
                     <div class="timer-segment">
-                        <span class="timer-segment-value" id="hours">0</span>
+                        <span class="timer-segment-value" id="slipHours">0</span>
                         <span class="timer-segment-label">時間</span>
                     </div>
                     <div class="timer-segment">
-                        <span class="timer-segment-value" id="minutes">0</span>
+                        <span class="timer-segment-value" id="slipMinutes">0</span>
                         <span class="timer-segment-label">分</span>
                     </div>
                     <div class="timer-segment">
-                        <span class="timer-segment-value" id="seconds">0</span>
+                        <span class="timer-segment-value" id="slipSeconds">0</span>
                         <span class="timer-segment-label">秒</span>
+                    </div>
+                </div>
+
+                <!-- 開始からの経過時間（小さめ表示） -->
+                <div class="timer-secondary">
+                    <div class="timer-secondary-label">禁煙開始からの経過:</div>
+                    <div class="timer-secondary-segments">
+                        <span><span id="startDays">0</span>日</span>
+                        <span><span id="startHours">0</span>時間</span>
+                        <span><span id="startMinutes">0</span>分</span>
+                        <span><span id="startSeconds">0</span>秒</span>
                     </div>
                 </div>
             </div>
@@ -1567,10 +1603,6 @@
                     <div class="slip-stat-box">
                         <div class="slip-stat-value" id="totalSlipCigarettes">0</div>
                         <div class="slip-stat-label">総本数</div>
-                    </div>
-                    <div class="slip-stat-box">
-                        <div class="slip-stat-value" id="daysSinceLastSlip">-</div>
-                        <div class="slip-stat-label">最後から経過日数</div>
                     </div>
                 </div>
                 <div id="slipsList"></div>
@@ -2193,17 +2225,39 @@
             const diffMinutes = Math.floor(diffMs / 60000);
             const diffSeconds = Math.floor(diffMs / 1000);
 
-            // 時間の計算
-            const days = Math.floor(diffMinutes / 1440);
-            const hours = Math.floor((diffMinutes % 1440) / 60);
-            const minutes = diffMinutes % 60;
-            const seconds = diffSeconds % 60;
+            // 開始からの経過時間の計算
+            const startDays = Math.floor(diffMinutes / 1440);
+            const startHours = Math.floor((diffMinutes % 1440) / 60);
+            const startMinutes = diffMinutes % 60;
+            const startSeconds = diffSeconds % 60;
 
-            // タイマー表示の更新
-            document.getElementById('days').textContent = days;
-            document.getElementById('hours').textContent = hours;
-            document.getElementById('minutes').textContent = minutes;
-            document.getElementById('seconds').textContent = seconds;
+            // 開始からの経過時間を小さめ表示に更新
+            document.getElementById('startDays').textContent = startDays;
+            document.getElementById('startHours').textContent = startHours;
+            document.getElementById('startMinutes').textContent = startMinutes;
+            document.getElementById('startSeconds').textContent = startSeconds;
+
+            // 最後に吸ってしまってからの経過時間の計算
+            let referenceDate = quitDate; // デフォルトは開始日
+            if (slips.length > 0) {
+                // 最後に吸った日がある場合はそれを使用
+                referenceDate = new Date(slips[0].timestamp);
+            }
+
+            const slipDiffMs = now - referenceDate;
+            const slipDiffMinutes = Math.floor(slipDiffMs / 60000);
+            const slipDiffSeconds = Math.floor(slipDiffMs / 1000);
+
+            const slipDays = Math.floor(slipDiffMinutes / 1440);
+            const slipHours = Math.floor((slipDiffMinutes % 1440) / 60);
+            const slipMinutes = slipDiffMinutes % 60;
+            const slipSeconds = slipDiffSeconds % 60;
+
+            // 最後に吸ってからの経過時間をメイン表示に更新
+            document.getElementById('slipDays').textContent = slipDays;
+            document.getElementById('slipHours').textContent = slipHours;
+            document.getElementById('slipMinutes').textContent = slipMinutes;
+            document.getElementById('slipSeconds').textContent = slipSeconds;
 
             // 統計の計算
             const cigarettesAvoided = Math.floor((diffMinutes / 1440) * quitData.cigarettesPerDay);
@@ -2541,18 +2595,8 @@
             const totalSlips = slips.length;
             const totalCigarettes = slips.reduce((sum, s) => sum + s.count, 0);
 
-            let daysSinceLastSlip = '-';
-            if (slips.length > 0) {
-                const lastSlipDate = new Date(slips[0].timestamp);
-                const now = new Date();
-                const diffTime = now - lastSlipDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                daysSinceLastSlip = diffDays + '日';
-            }
-
             document.getElementById('totalSlips').textContent = totalSlips;
             document.getElementById('totalSlipCigarettes').textContent = totalCigarettes;
-            document.getElementById('daysSinceLastSlip').textContent = daysSinceLastSlip;
 
             // 吸っちゃった記録一覧の更新
             const listContainer = document.getElementById('slipsList');
