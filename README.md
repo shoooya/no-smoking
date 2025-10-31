@@ -1,6 +1,18 @@
 # 禁煙サポートアプリ 🚭
 
-あなたの健康と未来のために作られた、禁煙継続をサポートするWebアプリケーションです。
+あなたの健康と未来のために作られた、禁煙継続をサポートする Web アプリケーションです。
+
+## ✨ 新機能
+
+### 🔐 ソーシャルログイン対応
+- Google アカウントでログイン
+- GitHub アカウントでログイン
+- デバイス間でデータを同期
+
+### ☁️ クラウド同期
+- Firebase Firestore によるリアルタイム同期
+- 複数デバイスからアクセス可能
+- データの自動バックアップ
 
 ## 特徴
 
@@ -29,112 +41,96 @@
 - 時間ベース: 1時間、1日、3日、1週間、2週間、1ヶ月、3ヶ月、6ヶ月、1年
 - 節約金額ベース: 1万円、5万円、10万円
 
-### 📈 進捗バー
-次の目標までの進捗を視覚化：
-- 1週間達成までの進捗
-- 1ヶ月達成までの進捗
-- 1年達成までの進捗
-
-### 💬 モチベーションメッセージ
-毎日変わる励ましのメッセージで継続をサポート
-
-### 💾 データ永続化
-LocalStorageを使用してデータを自動保存。ブラウザを閉じても記録が保持されます。
-
-## デモ・公開方法
-
-### 🚀 GitHub Pagesで公開
-
-**📖 詳細なセットアップガイド: [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)**
-
-#### 方法1: ブランチから直接公開（最も簡単）⚡
-
-1. このブランチをmainブランチにマージ
-2. GitHubのリポジトリページで **Settings** → **Pages** を開く
-3. **Source** で「**Deploy from a branch**」を選択
-4. **Branch** で「**main**」/「**/ (root)**」を選択して **Save**
-5. 数分後、`https://<ユーザー名>.github.io/<リポジトリ名>/` でアクセス可能に！
-
-例: `https://shoooya.github.io/no-smoking/`
-
-#### 方法2: GitHub Actionsで自動デプロイ（推奨）🤖
-
-**注意**: Claude Codeの制限により、ワークフローファイルを直接プッシュできません。
-以下のいずれかの方法で設定してください：
-
-**A. GitHub UIから作成（最も簡単）**
-1. GitHubの **Actions** タブ → **New workflow**
-2. ワークフローファイルの内容を貼り付け（詳細は[GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)参照）
-3. **Settings** → **Pages** → **Source** で「**GitHub Actions**」を選択
-
-**B. ローカルでプッシュ**
-`.github/workflows/deploy.yml` を作成してあなた自身のGit認証でプッシュ
-
-詳細な手順とトラブルシューティングは **[GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)** をご覧ください。
-
-#### ワークフローファイルのテンプレート
-
-`.github/workflows/deploy.yml` に以下を配置：
-
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main, master]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-その後、**Settings** → **Pages** → **Source** で「**GitHub Actions**」を選択
-
-## 使い方
-
-1. `index.html` をWebブラウザで開きます
-2. 初回起動時に以下の情報を入力：
-   - 禁煙開始日時
-   - 1日あたりの喫煙本数
-   - タバコ1箱の価格
-   - 1箱あたりの本数
-3. 「禁煙を開始する」ボタンをクリック
-4. ダッシュボードが表示され、リアルタイムで統計が更新されます
-
 ## 技術スタック
 
-- **HTML5**: セマンティックなマークアップ
-- **CSS3**: グラデーション、アニメーション、レスポンシブデザイン
-- **JavaScript (Vanilla)**: フレームワーク不要のピュアJS実装
-- **LocalStorage API**: データ永続化
+### フロントエンド
+- **Next.js 14**: React フレームワーク（App Router）
+- **TypeScript**: 型安全な開発
+- **Tailwind CSS**: ユーティリティファーストの CSS フレームワーク
+
+### バックエンド
+- **Firebase Authentication**: ソーシャルログイン
+- **Firebase Firestore**: NoSQL データベース
+
+### デプロイ
+- **Vercel**: 自動デプロイとホスティング
+
+## セットアップ
+
+詳細なセットアップ手順は [SETUP.md](SETUP.md) をご覧ください。
+
+### クイックスタート
+
+1. **リポジトリをクローン**
+   ```bash
+   git clone https://github.com/shoooya/no-smoking.git
+   cd no-smoking
+   ```
+
+2. **依存関係をインストール**
+   ```bash
+   npm install
+   ```
+
+3. **環境変数を設定**
+   ```bash
+   cp .env.local.example .env.local
+   # .env.local に Firebase の設定情報を入力
+   ```
+
+4. **開発サーバーを起動**
+   ```bash
+   npm run dev
+   ```
+
+5. http://localhost:3000 でアプリケーションが起動します
+
+## デプロイ
+
+### Vercel へのデプロイ
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fshoooya%2Fno-smoking)
+
+1. 上のボタンをクリック
+2. GitHub アカウントでログイン
+3. リポジトリをフォーク
+4. 環境変数を設定
+5. デプロイ
+
+## プロジェクト構造
+
+```
+no-smoking/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # ルートレイアウト
+│   ├── page.tsx           # ホームページ
+│   └── globals.css        # グローバルスタイル
+├── components/            # React コンポーネント
+│   ├── AuthButton.tsx     # 認証ボタン
+│   └── LoginPage.tsx      # ログインページ
+├── contexts/              # React Context
+│   └── AuthContext.tsx    # 認証コンテキスト
+├── lib/                   # ユーティリティ
+│   └── firebase.ts        # Firebase 設定
+├── legacy/                # 旧バージョン（静的 HTML）
+│   ├── index.html
+│   ├── styles.css
+│   └── js/
+├── .env.local.example     # 環境変数のテンプレート
+├── next.config.js         # Next.js 設定
+├── tailwind.config.js     # Tailwind CSS 設定
+├── tsconfig.json          # TypeScript 設定
+└── package.json           # 依存関係
+```
+
+## 開発
+
+### スクリプト
+
+- `npm run dev`: 開発サーバーを起動
+- `npm run build`: 本番ビルドを作成
+- `npm run start`: 本番サーバーを起動
+- `npm run lint`: コードをリント
 
 ## ブラウザ互換性
 
@@ -151,6 +147,14 @@ MIT License
 ## 健康に関する注意事項
 
 このアプリケーションは禁煙のサポートツールです。重度のニコチン依存症の場合は、医療機関での専門的な治療をお勧めします。
+
+## 貢献
+
+プルリクエストを歓迎します！大きな変更の場合は、まず Issue を開いて変更内容を議論してください。
+
+## サポート
+
+問題や質問がある場合は、[GitHub Issues](https://github.com/shoooya/no-smoking/issues) でお問い合わせください。
 
 ---
 
