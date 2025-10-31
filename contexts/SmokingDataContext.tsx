@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import {
   QuitData,
@@ -14,6 +14,15 @@ import {
 } from '@/types';
 import { calculateStatistics } from '@/lib/calculations';
 import { defaultCopingStrategies, defaultReasons } from '@/lib/data/constants';
+import {
+  getUserSmokingData,
+  saveQuitData,
+  saveCravings,
+  saveSlips,
+  saveAllSmokingData,
+  deleteUserSmokingData,
+  migrateLocalStorageToFirestore,
+} from '@/lib/firestore';
 
 interface SmokingDataContextType {
   // Data
@@ -54,6 +63,7 @@ export const useSmokingData = () => {
 export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [firestoreLoaded, setFirestoreLoaded] = useState(false);
 
   const [quitData, setQuitDataState] = useState<QuitData | null>(null);
   const [cravings, setCravings] = useState<Craving[]>([]);
@@ -67,26 +77,74 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
   // LocalStorage keys
   const STORAGE_KEY = user ? `smoking-data-${user.uid}` : 'smoking-data-local';
 
-  // Load data from localStorage
+  // 保存のデバウンス用
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load data from Firestore or localStorage
   useEffect(() => {
-    try {
-      const storedData = localStorage.getItem(STORAGE_KEY);
-      if (storedData) {
-        const data = JSON.parse(storedData);
-        setQuitDataState(data.quitData || null);
-        setCravings(data.cravings || []);
-        setSlips(data.slips || []);
-        setCopingStrategies(data.copingStrategies || defaultCopingStrategies);
-        setReasons(data.reasons || defaultReasons);
-        setCalendarData(data.calendarData || {});
-        setSOSHistory(data.sosHistory || []);
+    const loadData = async () => {
+      try {
+        if (user) {
+          // ユーザーがログインしている場合、Firestoreから読み込む
+          console.log('Loading data from Firestore...');
+          const firestoreData = await getUserSmokingData(user.uid);
+
+          // LocalStorageからの移行処理
+          const localStorageData = localStorage.getItem(STORAGE_KEY);
+          if (localStorageData && !firestoreData.quitData) {
+            console.log('Migrating data from LocalStorage to Firestore...');
+            const localData = JSON.parse(localStorageData);
+            await migrateLocalStorageToFirestore(user.uid, {
+              quitData: localData.quitData || null,
+              cravings: localData.cravings || [],
+              slips: localData.slips || [],
+            });
+            // 移行後、再度Firestoreから読み込む
+            const migratedData = await getUserSmokingData(user.uid);
+            setQuitDataState(migratedData.quitData);
+            setCravings(migratedData.cravings);
+            setSlips(migratedData.slips);
+          } else {
+            // Firestoreのデータをセット
+            setQuitDataState(firestoreData.quitData);
+            setCravings(firestoreData.cravings);
+            setSlips(firestoreData.slips);
+          }
+
+          // copingStrategies, reasons, calendarData, sosHistoryはLocalStorageから
+          if (localStorageData) {
+            const localData = JSON.parse(localStorageData);
+            setCopingStrategies(localData.copingStrategies || defaultCopingStrategies);
+            setReasons(localData.reasons || defaultReasons);
+            setCalendarData(localData.calendarData || {});
+            setSOSHistory(localData.sosHistory || []);
+          }
+
+          setFirestoreLoaded(true);
+        } else {
+          // ログインしていない場合はLocalStorageから読み込む
+          console.log('Loading data from LocalStorage...');
+          const storedData = localStorage.getItem(STORAGE_KEY);
+          if (storedData) {
+            const data = JSON.parse(storedData);
+            setQuitDataState(data.quitData || null);
+            setCravings(data.cravings || []);
+            setSlips(data.slips || []);
+            setCopingStrategies(data.copingStrategies || defaultCopingStrategies);
+            setReasons(data.reasons || defaultReasons);
+            setCalendarData(data.calendarData || {});
+            setSOSHistory(data.sosHistory || []);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading data from localStorage:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [STORAGE_KEY]);
+    };
+
+    loadData();
+  }, [user, STORAGE_KEY]);
 
   // Save data to localStorage whenever it changes
   useEffect(() => {
@@ -103,6 +161,36 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
   }, [quitData, cravings, slips, copingStrategies, reasons, calendarData, sosHistory, loading, STORAGE_KEY]);
+
+  // Save core data to Firestore (debounced)
+  useEffect(() => {
+    if (!loading && user && firestoreLoaded) {
+      // デバウンス: 1秒後に保存
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      saveTimeoutRef.current = setTimeout(async () => {
+        try {
+          console.log('Saving data to Firestore...');
+          await saveAllSmokingData(user.uid, {
+            quitData,
+            cravings,
+            slips,
+          });
+          console.log('Data saved to Firestore successfully');
+        } catch (error) {
+          console.error('Error saving data to Firestore:', error);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [quitData, cravings, slips, loading, user, firestoreLoaded]);
 
   // Calculate statistics whenever relevant data changes
   useEffect(() => {
@@ -179,7 +267,7 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setSOSHistory((prev) => [newRecord, ...prev]);
   };
 
-  const resetData = () => {
+  const resetData = async () => {
     if (confirm('本当にすべてのデータをリセットしますか？この操作は取り消せません。')) {
       setQuitDataState(null);
       setCravings([]);
@@ -189,6 +277,16 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setCalendarData({});
       setSOSHistory([]);
       localStorage.removeItem(STORAGE_KEY);
+
+      // Firestoreのデータも削除
+      if (user) {
+        try {
+          await deleteUserSmokingData(user.uid);
+          console.log('Firestore data deleted successfully');
+        } catch (error) {
+          console.error('Error deleting Firestore data:', error);
+        }
+      }
     }
   };
 
