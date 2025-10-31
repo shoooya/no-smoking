@@ -231,16 +231,31 @@ export async function disableSharing(userId: string): Promise<void> {
  */
 export async function getSharedData(shareId: string): Promise<UserSmokingData | null> {
   try {
+    console.log('[getSharedData] Searching for shareId:', shareId);
+
+    if (!shareId || shareId.trim() === '') {
+      console.error('[getSharedData] Invalid shareId provided');
+      return null;
+    }
+
     // usersコレクションからshareIdで検索
     const usersRef = collection(db, 'users');
+    console.log('[getSharedData] Creating query...');
+
     const q = query(usersRef, where('shareId', '==', shareId), where('sharingEnabled', '==', true));
+
+    console.log('[getSharedData] Executing query...');
     const querySnapshot = await getDocs(q);
+    console.log('[getSharedData] Query completed. Documents found:', querySnapshot.size);
 
     if (querySnapshot.empty) {
+      console.log('[getSharedData] No documents found for shareId:', shareId);
       return null;
     }
 
     const userData = querySnapshot.docs[0].data();
+    console.log('[getSharedData] Document data retrieved successfully');
+
     return {
       quitData: userData.quitData || null,
       cravings: userData.cravings || [],
@@ -249,7 +264,11 @@ export async function getSharedData(shareId: string): Promise<UserSmokingData | 
       shareId: userData.shareId,
     };
   } catch (error) {
-    console.error('Error fetching shared data:', error);
+    console.error('[getSharedData] Error fetching shared data:', error);
+    if (error instanceof Error) {
+      console.error('[getSharedData] Error message:', error.message);
+      console.error('[getSharedData] Error stack:', error.stack);
+    }
     throw error;
   }
 }
