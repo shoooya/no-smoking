@@ -12,6 +12,7 @@ import AchievementBadges from '@/components/AchievementBadges';
 import SlipsList from '@/components/SlipsList';
 import CravingsList from '@/components/CravingsList';
 import FloatingActionButtons from '@/components/FloatingActionButtons';
+import SmokingCalendar from '@/components/SmokingCalendar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -82,6 +83,9 @@ export default function Home() {
 
         {/* 達成バッジ */}
         <AchievementBadges />
+
+        {/* 禁煙カレンダー */}
+        <SmokingCalendar />
 
         {/* 渇望記録一覧 */}
         <CravingsList />
