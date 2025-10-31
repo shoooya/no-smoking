@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { QuitData, Craving, Slip } from '@/types';
 
 /**
@@ -232,7 +232,6 @@ export async function disableSharing(userId: string): Promise<void> {
 export async function getSharedData(shareId: string): Promise<UserSmokingData | null> {
   try {
     // usersコレクションからshareIdで検索
-    const { collection, query, where, getDocs } = await import('firebase/firestore');
     const usersRef = collection(db, 'users');
     const q = query(usersRef, where('shareId', '==', shareId), where('sharingEnabled', '==', true));
     const querySnapshot = await getDocs(q);

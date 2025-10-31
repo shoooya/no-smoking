@@ -11,7 +11,9 @@ export default function ShareButton() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const shareUrl = shareId ? `${window.location.origin}/share/${shareId}` : '';
+  const shareUrl = shareId && typeof window !== 'undefined'
+    ? `${window.location.origin}/share/${shareId}`
+    : '';
 
   const handleEnableSharing = async () => {
     try {
