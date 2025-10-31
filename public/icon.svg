@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#10b981" rx="64"/>
+  <g transform="translate(256, 256)">
+    <!-- 禁煙マーク: タバコと斜線 -->
+    <!-- タバコ本体 -->
+    <rect x="-80" y="-15" width="120" height="30" fill="#ffffff" rx="5"/>
+    <!-- タバコの先端（火） -->
+    <rect x="40" y="-15" width="20" height="30" fill="#ef4444" rx="3"/>
+    <!-- 煙 -->
+    <circle cx="65" cy="-25" r="8" fill="#94a3b8" opacity="0.6"/>
+    <circle cx="75" cy="-35" r="6" fill="#94a3b8" opacity="0.4"/>
+    <circle cx="85" cy="-40" r="5" fill="#94a3b8" opacity="0.3"/>
+
+    <!-- 禁止マーク（赤い円と斜線） -->
+    <circle cx="0" cy="0" r="100" fill="none" stroke="#ef4444" stroke-width="16"/>
+    <line x1="-70" y1="-70" x2="70" y2="70" stroke="#ef4444" stroke-width="16" stroke-linecap="round"/>
+  </g>
+</svg>
