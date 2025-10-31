@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SmokingDataProvider } from '@/contexts/SmokingDataContext';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: '禁煙サポート - あなたの健康と未来のために',
@@ -18,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
+      <body className="font-sans antialiased">
         <AuthProvider>
           <SmokingDataProvider>{children}</SmokingDataProvider>
         </AuthProvider>
