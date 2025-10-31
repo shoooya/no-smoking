@@ -2,37 +2,39 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LogOut, Loader2 } from 'lucide-react';
 
 export default function AuthButton() {
-  const { user, loading, signInWithGoogle, signInWithGithub, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
 
   if (loading) {
     return (
       <div className="flex justify-center items-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <Loader2 className="h-6 w-6 animate-spin" />
       </div>
     );
   }
 
   if (user) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          {user.photoURL && (
-            <img
-              src={user.photoURL}
-              alt={user.displayName || 'User'}
-              className="w-8 h-8 rounded-full"
-            />
-          )}
-          <span className="text-sm font-medium">{user.displayName || user.email}</span>
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+            <AvatarFallback>{user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
+          </Avatar>
+          <span className="text-sm font-medium hidden sm:inline">{user.displayName || user.email}</span>
         </div>
-        <button
+        <Button
           onClick={signOut}
-          className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+          variant="destructive"
+          size="sm"
         >
+          <LogOut className="h-4 w-4 mr-2" />
           ログアウト
-        </button>
+        </Button>
       </div>
     );
   }
