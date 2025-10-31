@@ -3,8 +3,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // ユーザーは自分のドキュメントのみ読み書き可能
+    // シェアが有効な場合は誰でも読み取り可能
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // 自分のデータは読み書き可能
+      allow write: if request.auth != null && request.auth.uid == userId;
+
+      // 自分のデータは読み取り可能
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // シェアが有効な場合は誰でも読み取り可能
+      allow read: if resource.data.sharingEnabled == true;
     }
 
     // その他のドキュメントへのアクセスを拒否
