@@ -9,6 +9,9 @@ import QuitTimer from '@/components/QuitTimer';
 import StatisticsCards from '@/components/StatisticsCards';
 import HealthMilestones from '@/components/HealthMilestones';
 import AchievementBadges from '@/components/AchievementBadges';
+import SlipsList from '@/components/SlipsList';
+import CravingsList from '@/components/CravingsList';
+import FloatingActionButtons from '@/components/FloatingActionButtons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -80,6 +83,12 @@ export default function Home() {
         {/* 達成バッジ */}
         <AchievementBadges />
 
+        {/* 渇望記録一覧 */}
+        <CravingsList />
+
+        {/* スリップ記録一覧 */}
+        <SlipsList />
+
         {/* リセットボタン */}
         <div className="flex justify-center pt-4">
           <Button
@@ -91,6 +100,9 @@ export default function Home() {
           </Button>
         </div>
       </main>
+
+      {/* FABボタン */}
+      <FloatingActionButtons />
     </div>
   );
 }
