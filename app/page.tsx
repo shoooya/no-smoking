@@ -1,15 +1,32 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useSmokingData } from '@/contexts/SmokingDataContext';
 import LoginPage from '@/components/LoginPage';
+import SetupForm from '@/components/SetupForm';
 import AuthButton from '@/components/AuthButton';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Wallet, Cigarette, Clock, CheckCircle2 } from 'lucide-react';
+import QuitTimer from '@/components/QuitTimer';
+import StatisticsCards from '@/components/StatisticsCards';
+import HealthMilestones from '@/components/HealthMilestones';
+import AchievementBadges from '@/components/AchievementBadges';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import { motivationMessages } from '@/lib/data/constants';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { quitData, loading: dataLoading, resetData } = useSmokingData();
+  const [motivationMessage, setMotivationMessage] = useState('');
 
-  if (loading) {
+  useEffect(() => {
+    // ランダムなモチベーションメッセージを表示
+    const randomIndex = Math.floor(Math.random() * motivationMessages.length);
+    setMotivationMessage(motivationMessages[randomIndex]);
+  }, []);
+
+  if (authLoading || dataLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -17,10 +34,17 @@ export default function Home() {
     );
   }
 
+  // ユーザーがログインしていない場合
   if (!user) {
     return <LoginPage />;
   }
 
+  // 禁煙データが設定されていない場合
+  if (!quitData) {
+    return <SetupForm />;
+  }
+
+  // ダッシュボード表示
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
@@ -34,86 +58,37 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <Card>
+        {/* タイマー */}
+        <QuitTimer />
+
+        {/* 統計カード */}
+        <StatisticsCards />
+
+        {/* モチベーションメッセージ */}
+        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
           <CardHeader>
-            <CardTitle>ようこそ、{user.displayName}さん！</CardTitle>
-            <CardDescription>
-              禁煙サポートアプリへようこそ。ここでは、あなたの禁煙の進捗を記録し、目標達成をサポートします。
-            </CardDescription>
+            <CardTitle className="text-lg">💪 今日のメッセージ</CardTitle>
           </CardHeader>
           <CardContent>
-            <Card className="bg-blue-50 border-blue-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
-                  次のステップ
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-blue-900">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-0.5">•</span>
-                    <span>禁煙開始日時を設定しましょう</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-0.5">•</span>
-                    <span>1日の喫煙本数を記録しましょう</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-600 mt-0.5">•</span>
-                    <span>禁煙の理由を書き留めましょう</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+            <p className="text-purple-900">{motivationMessage}</p>
           </CardContent>
         </Card>
 
-        <div className="grid md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-900">
-                節約した金額
-              </CardTitle>
-              <Wallet className="h-5 w-5 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-800">¥0</div>
-              <p className="text-xs text-green-600 mt-1">
-                タバコを買わずに節約
-              </p>
-            </CardContent>
-          </Card>
+        {/* 健康マイルストーン */}
+        <HealthMilestones />
 
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-900">
-                吸わなかったタバコ
-              </CardTitle>
-              <Cigarette className="h-5 w-5 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-800">0</div>
-              <p className="text-xs text-blue-600 mt-1">
-                本のタバコを避けました
-              </p>
-            </CardContent>
-          </Card>
+        {/* 達成バッジ */}
+        <AchievementBadges />
 
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-900">
-                禁煙継続日数
-              </CardTitle>
-              <Clock className="h-5 w-5 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-purple-800">0日</div>
-              <p className="text-xs text-purple-600 mt-1">
-                継続することが力になります
-              </p>
-            </CardContent>
-          </Card>
+        {/* リセットボタン */}
+        <div className="flex justify-center pt-4">
+          <Button
+            variant="outline"
+            onClick={resetData}
+            className="text-destructive hover:text-destructive"
+          >
+            データをリセット
+          </Button>
         </div>
       </main>
     </div>
