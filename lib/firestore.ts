@@ -14,6 +14,8 @@ export interface UserSmokingData {
   quitData: QuitData | null;
   cravings: Craving[];
   slips: Slip[];
+  sharingEnabled?: boolean;
+  shareId?: string;
 }
 
 /**
@@ -30,6 +32,8 @@ export async function getUserSmokingData(userId: string): Promise<UserSmokingDat
         quitData: data.quitData || null,
         cravings: data.cravings || [],
         slips: data.slips || [],
+        sharingEnabled: data.sharingEnabled || false,
+        shareId: data.shareId || undefined,
       };
     }
 
@@ -38,6 +42,7 @@ export async function getUserSmokingData(userId: string): Promise<UserSmokingDat
       quitData: null,
       cravings: [],
       slips: [],
+      sharingEnabled: false,
     };
   } catch (error) {
     console.error('Error fetching user smoking data:', error);
@@ -155,6 +160,97 @@ export async function migrateLocalStorageToFirestore(
     }
   } catch (error) {
     console.error('Error migrating data to Firestore:', error);
+    throw error;
+  }
+}
+
+/**
+ * シェアIDを生成
+ */
+export function generateShareId(): string {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+/**
+ * 共有を有効化してシェアIDを取得
+ */
+export async function enableSharing(userId: string): Promise<string> {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+
+    let shareId: string;
+
+    if (userDoc.exists() && userDoc.data().shareId) {
+      // 既存のshareIdを使用
+      shareId = userDoc.data().shareId;
+    } else {
+      // 新しいshareIdを生成
+      shareId = generateShareId();
+    }
+
+    await setDoc(
+      userDocRef,
+      {
+        sharingEnabled: true,
+        shareId,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+
+    return shareId;
+  } catch (error) {
+    console.error('Error enabling sharing:', error);
+    throw error;
+  }
+}
+
+/**
+ * 共有を無効化
+ */
+export async function disableSharing(userId: string): Promise<void> {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    await setDoc(
+      userDocRef,
+      {
+        sharingEnabled: false,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error('Error disabling sharing:', error);
+    throw error;
+  }
+}
+
+/**
+ * シェアIDから公開データを取得
+ */
+export async function getSharedData(shareId: string): Promise<UserSmokingData | null> {
+  try {
+    // usersコレクションからshareIdで検索
+    const { collection, query, where, getDocs } = await import('firebase/firestore');
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('shareId', '==', shareId), where('sharingEnabled', '==', true));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    const userData = querySnapshot.docs[0].data();
+    return {
+      quitData: userData.quitData || null,
+      cravings: userData.cravings || [],
+      slips: userData.slips || [],
+      sharingEnabled: userData.sharingEnabled,
+      shareId: userData.shareId,
+    };
+  } catch (error) {
+    console.error('Error fetching shared data:', error);
     throw error;
   }
 }

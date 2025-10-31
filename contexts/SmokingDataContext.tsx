@@ -22,6 +22,8 @@ import {
   saveAllSmokingData,
   deleteUserSmokingData,
   migrateLocalStorageToFirestore,
+  enableSharing as enableSharingFirestore,
+  disableSharing as disableSharingFirestore,
 } from '@/lib/firestore';
 
 interface SmokingDataContextType {
@@ -34,6 +36,8 @@ interface SmokingDataContextType {
   calendarData: Record<string, CalendarDay>;
   sosHistory: SOSRecord[];
   statistics: Statistics | null;
+  sharingEnabled: boolean;
+  shareId?: string;
 
   // Actions
   setQuitData: (data: QuitData) => void;
@@ -45,6 +49,8 @@ interface SmokingDataContextType {
   updateStrategyEffectiveness: (id: string, effectiveness: number) => void;
   addSOSRecord: (overcame: boolean, duration?: number) => void;
   resetData: () => void;
+  enableSharing: () => Promise<string>;
+  disableSharing: () => Promise<void>;
 
   // Loading state
   loading: boolean;
@@ -73,6 +79,8 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [calendarData, setCalendarData] = useState<Record<string, CalendarDay>>({});
   const [sosHistory, setSOSHistory] = useState<SOSRecord[]>([]);
   const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [sharingEnabled, setSharingEnabled] = useState<boolean>(false);
+  const [shareId, setShareId] = useState<string | undefined>(undefined);
 
   // LocalStorage keys
   const STORAGE_KEY = user ? `smoking-data-${user.uid}` : 'smoking-data-local';
@@ -104,12 +112,18 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
             setQuitDataState(migratedData.quitData);
             setCravings(migratedData.cravings);
             setSlips(migratedData.slips);
+            setSharingEnabled(migratedData.sharingEnabled || false);
+            setShareId(migratedData.shareId);
           } else {
             // Firestoreのデータをセット
             setQuitDataState(firestoreData.quitData);
             setCravings(firestoreData.cravings);
             setSlips(firestoreData.slips);
           }
+
+          // シェアリング情報をセット
+          setSharingEnabled(firestoreData.sharingEnabled || false);
+          setShareId(firestoreData.shareId);
 
           // copingStrategies, reasons, calendarData, sosHistoryはLocalStorageから
           if (localStorageData) {
@@ -276,6 +290,8 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setReasons(defaultReasons);
       setCalendarData({});
       setSOSHistory([]);
+      setSharingEnabled(false);
+      setShareId(undefined);
       localStorage.removeItem(STORAGE_KEY);
 
       // Firestoreのデータも削除
@@ -290,6 +306,36 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
+  const enableSharing = async (): Promise<string> => {
+    if (!user) {
+      throw new Error('ログインが必要です');
+    }
+
+    try {
+      const newShareId = await enableSharingFirestore(user.uid);
+      setSharingEnabled(true);
+      setShareId(newShareId);
+      return newShareId;
+    } catch (error) {
+      console.error('Error enabling sharing:', error);
+      throw error;
+    }
+  };
+
+  const disableSharing = async (): Promise<void> => {
+    if (!user) {
+      throw new Error('ログインが必要です');
+    }
+
+    try {
+      await disableSharingFirestore(user.uid);
+      setSharingEnabled(false);
+    } catch (error) {
+      console.error('Error disabling sharing:', error);
+      throw error;
+    }
+  };
+
   const value = {
     quitData,
     cravings,
@@ -299,6 +345,8 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
     calendarData,
     sosHistory,
     statistics,
+    sharingEnabled,
+    shareId,
     setQuitData,
     addCraving,
     addSlip,
@@ -308,6 +356,8 @@ export const SmokingDataProvider: React.FC<{ children: React.ReactNode }> = ({ c
     updateStrategyEffectiveness,
     addSOSRecord,
     resetData,
+    enableSharing,
+    disableSharing,
     loading,
   };
 
