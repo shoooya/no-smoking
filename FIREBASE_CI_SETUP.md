@@ -4,21 +4,76 @@
 
 このプロジェクトでは、Firestoreセキュリティルール（`firestore.rules`）をGitで管理し、mainブランチにマージされた際にGitHub Actionsで自動的にFirebaseにデプロイします。
 
-## セットアップ手順
+認証方法は2つあります：
+- **方法1: Service Account（推奨）** - Firebaseコンソールから取得
+- **方法2: Firebase Token** - Firebase CLIから生成
 
-### 1. Firebase CLI のインストール（ローカル環境）
+## 方法1: Service Account を使う（推奨）
+
+### 手順1: Service Account キーをFirebaseコンソールから取得
+
+1. [Firebase Console](https://console.firebase.google.com/) にアクセス
+2. プロジェクトを選択
+3. ⚙️（設定アイコン）> **プロジェクトの設定** をクリック
+4. **サービス アカウント** タブを選択
+5. 一番下の **新しい秘密鍵の生成** をクリック
+6. 確認ダイアログで **キーを生成** をクリック
+7. JSONファイルがダウンロードされます（例: `your-project-12345-firebase-adminsdk-xxxxx.json`）
+
+⚠️ **重要**: このファイルには機密情報が含まれています。Gitにコミットしないでください！
+
+### 手順2: JSONファイルの内容をBase64エンコード
+
+#### macOS/Linux の場合:
+```bash
+cat path/to/your-service-account.json | base64
+```
+
+#### Windows (PowerShell) の場合:
+```powershell
+[Convert]::ToBase64String([System.IO.File]::ReadAllBytes("path\to\your-service-account.json"))
+```
+
+出力された長い文字列をコピーしてください。
+
+### 手順3: GitHub Secrets に設定
+
+1. GitHubリポジトリにアクセス
+2. **Settings** > **Secrets and variables** > **Actions** に移動
+3. **New repository secret** をクリック
+4. 2つのシークレットを作成：
+
+#### シークレット1: サービスアカウント
+- **Name**: `FIREBASE_SERVICE_ACCOUNT`
+- **Secret**: 手順2でコピーしたBase64文字列を貼り付け
+- **Add secret** をクリック
+
+#### シークレット2: プロジェクトID
+- **Name**: `FIREBASE_PROJECT_ID`
+- **Secret**: あなたのFirebaseプロジェクトID（例: `my-project-12345`）
+- **Add secret** をクリック
+
+### 手順4: GitHub Actions ワークフローを更新
+
+`.github/workflows/deploy-firestore-rules.yml` が既に更新されています。特に変更は不要です。
+
+---
+
+## 方法2: Firebase Token を使う（CLI必須）
+
+### 手順1: Firebase CLI のインストール
 
 ```bash
 npm install -g firebase-tools
 ```
 
-### 2. Firebase にログイン
+### 手順2: Firebase にログイン
 
 ```bash
 firebase login
 ```
 
-### 3. Firebase Token の生成
+### 手順3: Firebase Token の生成
 
 GitHub ActionsからFirebaseにアクセスするためのトークンを生成します。
 
@@ -40,7 +95,7 @@ Example: firebase deploy --token "$FIREBASE_TOKEN"
 
 このトークンをコピーしてください。
 
-### 4. GitHub Secrets の設定
+### 手順4: GitHub Secrets の設定
 
 1. GitHubリポジトリにアクセス
 2. **Settings** > **Secrets and variables** > **Actions** に移動
@@ -50,7 +105,9 @@ Example: firebase deploy --token "$FIREBASE_TOKEN"
    - **Secret**: 手順3でコピーしたトークン
 5. **Add secret** をクリック
 
-### 5. Firebase プロジェクトID の設定
+---
+
+## Firebase プロジェクトID の設定（共通）
 
 `.firebaserc` ファイルを作成（まだ存在しない場合）：
 
@@ -109,15 +166,42 @@ firebase deploy --only firestore:rules
 
 ## トラブルシューティング
 
-### エラー: "FIREBASE_TOKEN is not set"
+### エラー: "Error: Invalid service account"
 
-**原因**: GitHub Secretsに `FIREBASE_TOKEN` が設定されていない
+**原因**: Service Account JSONのデコードに失敗している
 
-**解決**: 上記の手順4を実行
+**解決**:
+1. Base64エンコードが正しいか確認
+2. 以下のコマンドで検証：
+   ```bash
+   # macOS/Linux
+   echo "YOUR_BASE64_STRING" | base64 -d | jq .
+   ```
+3. 有効なJSONが出力されることを確認
+4. GitHub Secretsの `FIREBASE_SERVICE_ACCOUNT` を再設定
 
 ---
 
-### エラー: "Error: Failed to get Firebase project"
+### エラー: "Error: Failed to get Firebase project" (Service Account使用時)
+
+**原因**: `FIREBASE_PROJECT_ID` が設定されていない、または間違っている
+
+**解決**:
+1. Firebaseコンソールでプロジェクトを確認
+2. GitHub Secretsの `FIREBASE_PROJECT_ID` を正しいIDに更新
+3. プロジェクトIDは `firebase.json` の形式ではなく、単純な文字列（例: `my-project-12345`）
+
+---
+
+### エラー: "FIREBASE_TOKEN is not set"
+
+**原因**: GitHub Secretsに `FIREBASE_TOKEN` が設定されていない（Token方式使用時）
+
+**解決**: 方法2の手順4を実行
+
+---
+
+### エラー: "Error: Failed to get Firebase project" (Token使用時)
 
 **原因**: `.firebaserc` が存在しないか、プロジェクトIDが間違っている
 
@@ -152,7 +236,32 @@ firebase deploy --only firestore:rules
 
 ## セキュリティ
 
-### Firebase Token の管理
+### Service Account の管理（方法1使用時）
+
+- ✅ Service Account JSONファイルは**絶対にGitにコミットしないでください**
+- ✅ GitHub Secretsで安全に管理されます
+- ✅ ワークフロー実行後は自動的にファイルが削除されます
+- ✅ Base64エンコードされた状態で保存されます
+- ❌ Service Account JSONをコードやログに含めないでください
+
+**`.gitignore` に追加推奨**:
+```
+# Firebase Service Account
+*-firebase-adminsdk-*.json
+service-account*.json
+```
+
+### Service Account の更新
+
+定期的に新しいService Accountを生成することを推奨します：
+
+1. 古いService Accountを削除（Firebaseコンソール > サービス アカウント）
+2. 新しいService Accountを生成
+3. GitHub Secretsの `FIREBASE_SERVICE_ACCOUNT` を更新
+
+---
+
+### Firebase Token の管理（方法2使用時）
 
 - ✅ Firebase TokenはGitHub Secretsで安全に管理されます
 - ✅ トークンはログに表示されません

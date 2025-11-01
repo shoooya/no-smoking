@@ -1,6 +1,11 @@
 # Note: GitHub Workflows are now managed in the repository
 # .github/workflows/ - Included for Firebase CI/CD automation
 
+# Firebase Service Account (never commit these!)
+*-firebase-adminsdk-*.json
+service-account*.json
+.firebaserc
+
 # Next.js
 /.next/
 /out/
