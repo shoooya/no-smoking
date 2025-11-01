@@ -13,27 +13,38 @@ import Link from 'next/link';
 
 export default function SharePage() {
   const params = useParams();
-  const shareId = params.shareId as string;
+  const shareIdParam = params?.shareId;
+  const shareId = Array.isArray(shareIdParam) ? shareIdParam[0] : shareIdParam;
+
   const [data, setData] = useState<UserSmokingData | null>(null);
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!shareId) {
+      setError('共有IDが指定されていません。');
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       try {
+        console.log('Fetching shared data for shareId:', shareId);
         const sharedData = await getSharedData(shareId);
+
         if (!sharedData) {
-          setError('共有データが見つかりませんでした。');
+          setError('共有データが見つかりませんでした。URLが正しいか確認してください。');
           return;
         }
 
+        console.log('Shared data loaded:', sharedData);
         setData(sharedData);
         const stats = calculateStatistics(sharedData.quitData, sharedData.slips);
         setStatistics(stats);
       } catch (err) {
         console.error('Error fetching shared data:', err);
-        setError('データの取得中にエラーが発生しました。');
+        setError(`データの取得中にエラーが発生しました: ${err instanceof Error ? err.message : '不明なエラー'}`);
       } finally {
         setLoading(false);
       }
