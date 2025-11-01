@@ -97,6 +97,17 @@
 4. 環境変数を設定
 5. デプロイ
 
+### Firebase CI/CD（Firestoreルール自動デプロイ）
+
+Firestoreセキュリティルールは、mainブランチにマージされると自動的にデプロイされます。
+
+**セットアップ方法**: [FIREBASE_CI_SETUP.md](FIREBASE_CI_SETUP.md) を参照
+
+**概要**:
+- `firestore.rules` の変更がmainブランチにマージされると自動デプロイ
+- GitHub Actionsで実行
+- Firebase Tokenの設定が必要（初回のみ）
+
 ## プロジェクト構造
 
 ```

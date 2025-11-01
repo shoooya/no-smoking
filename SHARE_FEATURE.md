@@ -9,6 +9,14 @@
 
 シェア機能を有効にするには、Firestoreのセキュリティルールをデプロイする必要があります。
 
+#### オプション A: CI/CD（推奨）
+
+mainブランチにマージすると自動的にデプロイされます。
+
+詳細は [FIREBASE_CI_SETUP.md](FIREBASE_CI_SETUP.md) を参照してください。
+
+#### オプション B: 手動デプロイ
+
 ```bash
 firebase deploy --only firestore:rules
 ```

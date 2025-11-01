@@ -1,6 +1,5 @@
-# GitHub Workflows (add manually via GitHub UI or local Git)
-# Claude Code cannot push workflow files due to permission restrictions
-.github/workflows/
+# Note: GitHub Workflows are now managed in the repository
+# .github/workflows/ - Included for Firebase CI/CD automation
 
 # Next.js
 /.next/
