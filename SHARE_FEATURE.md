@@ -138,6 +138,6 @@ firebase deploy --only firestore:rules
 ### セキュリティ上の注意
 
 `allow read` により未ログインユーザーも `sharingEnabled == true` のドキュメントを読み取れますが：
-- クエリ結果には `sharingEnabled == true` のドキュメントのみが含まれます
+- Firestoreのセキュリティルールによって、未ログインユーザーは `sharingEnabled == true` のドキュメントのみアクセス可能です（クエリによるフィルタではなく、アクセス権による制限です）
 - 書き込み操作は認証済みユーザーのみに厳密に制限されています
 - ユーザーIDやメールアドレスなどの個人情報は共有されません
