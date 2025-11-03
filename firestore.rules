@@ -8,13 +8,11 @@ service cloud.firestore {
       // 書き込みは本人のみ
       allow create, update, delete: if request.auth != null && request.auth.uid == userId;
 
-      // 個別ドキュメント取得（get）
-      allow get: if request.auth != null && request.auth.uid == userId;
-      allow get: if resource.data.sharingEnabled == true;
-
-      // クエリ（list）- 未ログインユーザーでも実行可能
-      // 実際に読み取れるのは sharingEnabled == true のドキュメントのみ
-      allow list: if true;
+      // 読み取り（get と list を統合）
+      // - 認証済みユーザーは自分のドキュメントを読み取り可能
+      // - 誰でも sharingEnabled == true のドキュメントを読み取り可能
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow read: if resource.data.sharingEnabled == true;
     }
 
     // その他のドキュメントへのアクセスを拒否
