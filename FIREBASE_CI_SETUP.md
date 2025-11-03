@@ -189,6 +189,19 @@ git push
 
 ---
 
+### エラー: "Failed to authenticate, have you run firebase login?"
+
+**原因**: `FIREBASE_TOKEN` が正しく設定されていない、または認証方法が間違っている
+
+**解決**:
+1. GitHub Secretsに `FIREBASE_TOKEN` が正しく設定されているか確認
+2. トークンが正しいか確認（`firebase login:ci` で再生成）
+3. ワークフローで `FIREBASE_TOKEN` 環境変数が設定されているか確認
+
+**注意**: Firebase CLIは環境変数 `FIREBASE_TOKEN` を自動的に使用するため、`--token` オプションは不要です。
+
+---
+
 ### GitHub Actionsが実行されない
 
 **原因1**: `firestore.rules` が変更されていない

@@ -28,9 +28,8 @@ jobs:
       - name: Deploy Firestore Rules
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
         run: |
-          firebase deploy --only firestore:rules --token "$FIREBASE_TOKEN" --project "$FIREBASE_PROJECT_ID" --non-interactive
+          firebase deploy --only firestore:rules --project ${{ secrets.FIREBASE_PROJECT_ID }} --non-interactive
 
       - name: Deployment Success
         run: |
