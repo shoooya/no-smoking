@@ -45,14 +45,35 @@ Example: firebase deploy --token "$FIREBASE_TOKEN"
 1. GitHubリポジトリにアクセス
 2. **Settings** > **Secrets and variables** > **Actions** に移動
 3. **New repository secret** をクリック
-4. 以下の情報を入力：
-   - **Name**: `FIREBASE_TOKEN`
-   - **Secret**: 手順3でコピーしたトークン
+4. 以下の2つのシークレットを設定：
+
+#### 4.1. FIREBASE_TOKEN の設定
+
+- **Name**: `FIREBASE_TOKEN`
+- **Secret**: 手順3でコピーしたトークン
+
+#### 4.2. FIREBASE_PROJECT_ID の設定
+
+- **Name**: `FIREBASE_PROJECT_ID`
+- **Secret**: あなたのFirebaseプロジェクトID（例: `my-project-12345`）
+
 5. **Add secret** をクリック
 
-### 5. Firebase プロジェクトID の設定
+### 5. Firebase プロジェクトID の設定（2つの方法）
 
-`.firebaserc` ファイルを作成（まだ存在しない場合）：
+#### 方法1: GitHub Secrets を使用（推奨）
+
+上記の手順4.2で`FIREBASE_PROJECT_ID`シークレットを設定するだけです。
+この方法では`.firebaserc`ファイルは不要です。
+
+**メリット:**
+- ✅ プロジェクトIDをリポジトリにコミットする必要がない
+- ✅ プライベートプロジェクトIDを保護できる
+- ✅ 環境ごとに異なるプロジェクトIDを簡単に切り替えられる
+
+#### 方法2: .firebaserc ファイルを使用
+
+`.firebaserc` ファイルを作成（ローカル開発にも便利）：
 
 ```bash
 firebase use --add
@@ -76,6 +97,10 @@ firebase use --add
 git add .firebaserc
 git commit -m "chore: add Firebase project configuration"
 ```
+
+**メリット:**
+- ✅ ローカル環境で`firebase`コマンドを使用する際に便利
+- ✅ プロジェクトIDを明示的に管理できる
 
 ## 動作確認
 
@@ -109,11 +134,37 @@ firebase deploy --only firestore:rules
 
 ## トラブルシューティング
 
+### エラー: "No currently active project"
+
+**原因**: Firebaseプロジェクトが指定されていない
+
+```
+Error: No currently active project.
+To run this command, you need to specify a project.
+```
+
+**解決方法1（推奨）**: GitHub Secretsに `FIREBASE_PROJECT_ID` を設定
+
+1. GitHubリポジトリの **Settings** > **Secrets and variables** > **Actions** に移動
+2. `FIREBASE_PROJECT_ID` シークレットを追加
+3. 値にFirebaseプロジェクトID（例: `my-project-12345`）を設定
+
+**解決方法2**: `.firebaserc` ファイルを作成してコミット
+
+```bash
+firebase use --add
+git add .firebaserc
+git commit -m "chore: add Firebase project configuration"
+git push
+```
+
+---
+
 ### エラー: "FIREBASE_TOKEN is not set"
 
 **原因**: GitHub Secretsに `FIREBASE_TOKEN` が設定されていない
 
-**解決**: 上記の手順4を実行
+**解決**: 上記の手順4.1を実行
 
 ---
 
@@ -124,6 +175,7 @@ firebase deploy --only firestore:rules
 **解決**:
 1. `.firebaserc` ファイルを確認
 2. `firebase use --add` でプロジェクトを再設定
+3. またはGitHub Secretsの `FIREBASE_PROJECT_ID` を確認
 
 ---
 
