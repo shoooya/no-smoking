@@ -58,9 +58,9 @@ GitHub ActionsからFirebaseにアクセスするための認証情報を作成�
 3. **New repository secret** をクリック
 4. 以下の2つのシークレットを設定：
 
-#### 4.1. GOOGLE_CREDENTIALS の設定
+#### 4.1. FIREBASE_SERVICE_ACCOUNT の設定
 
-- **Name**: `GOOGLE_CREDENTIALS`
+- **Name**: `FIREBASE_SERVICE_ACCOUNT`
 - **Secret**: 手順3でダウンロードしたJSONファイルの**全内容**をそのまま貼り付け
 
 **重要**: JSONファイルの内容を一文字も変更せずに、そのまま貼り付けてください。
@@ -175,9 +175,9 @@ git push
 
 ---
 
-### エラー: "GOOGLE_CREDENTIALS is not set" または認証エラー
+### エラー: "FIREBASE_SERVICE_ACCOUNT is not set" または認証エラー
 
-**原因**: GitHub Secretsに `GOOGLE_CREDENTIALS` が正しく設定されていない
+**原因**: GitHub Secretsに `FIREBASE_SERVICE_ACCOUNT` が正しく設定されていない
 
 **解決**:
 1. Firebase ConsoleでService Accountの秘密鍵を再生成
@@ -203,7 +203,7 @@ git push
 
 **解決（Service Account方式 - 推奨）**:
 1. Firebase ConsoleでService Accountの秘密鍵を再生成
-2. GitHub Secretsの `GOOGLE_CREDENTIALS` を更新
+2. GitHub Secretsの `FIREBASE_SERVICE_ACCOUNT` を更新
 
 ---
 
@@ -212,7 +212,7 @@ git push
 **原因**: 認証情報が正しく設定されていない
 
 **解決（Service Account方式 - 推奨）**:
-1. GitHub Secretsに `GOOGLE_CREDENTIALS` が設定されているか確認
+1. GitHub Secretsに `FIREBASE_SERVICE_ACCOUNT` が設定されているか確認
 2. JSONファイルの内容が完全にコピーされているか確認
 3. Firebase Consoleで該当のService Accountが有効か確認
 
@@ -258,7 +258,7 @@ Service Accountには必要最小限の権限のみを付与してください�
 定期的にService Accountの秘密鍵を再生成することを推奨します：
 
 1. Firebase Consoleで新しい秘密鍵を生成
-2. GitHub Secretsの `GOOGLE_CREDENTIALS` を更新
+2. GitHub Secretsの `FIREBASE_SERVICE_ACCOUNT` を更新
 3. 古い秘密鍵を削除（Firebase Console > サービス アカウント > キーの管理）
 
 ## その他のデプロイ設定
